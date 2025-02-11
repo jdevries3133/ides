@@ -1,11 +1,6 @@
 //! Cookie-based session, secured by a HMAC signature.
 use super::crypto;
-use crate::{
-    config,
-    db_ops::{GetModel, GetUserQuery, UserIdentifer},
-    errors::ServerError,
-    models,
-};
+use crate::{config, errors::ServerError};
 use anyhow::Result;
 use axum::http::{HeaderMap, HeaderValue};
 use base64::{engine::general_purpose, Engine as _};
@@ -13,7 +8,6 @@ use chrono::{DateTime, Days, Utc};
 use chrono_tz::Tz;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
 
 /// `Session` is signed and serialized into the `Cookie` header when a
 /// [HeaderMap] is passed into the [Session::update_headers()] method. Thus,
@@ -47,11 +41,7 @@ impl Session {
         let token = &captures[1];
         let deserialize_result = Self::deserialize(token);
 
-        if let Ok(session) = deserialize_result {
-            Some(session)
-        } else {
-            None
-        }
+        deserialize_result.ok()
     }
     /// `err_msg` should identify which handler the error is coming from. Simply
     /// the name of the handler function is typically the best thing to put
@@ -130,15 +120,6 @@ impl Session {
                 Err("Failed to validate session signature")
             }
         }
-    }
-    pub async fn get_user(&self, db: &PgPool) -> Result<models::User> {
-        models::User::get(
-            db,
-            &GetUserQuery {
-                identifier: UserIdentifer::Id(self.user_id),
-            },
-        )
-        .await
     }
 }
 
