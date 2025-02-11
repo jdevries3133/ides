@@ -1,0 +1,7 @@
+/target
+.env
+node_modules
+tailwind.generated.css
+src/htmx-*.vendor.js
+.terraform
+terraform.tfvars
