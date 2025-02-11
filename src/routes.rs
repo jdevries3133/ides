@@ -1,9 +1,9 @@
 //! All possible routes with their params are defined in a big enum.
 
-use super::{auth, controllers, legal, middleware, models};
+use super::{controllers, legal, middleware, models};
 use axum::{
     middleware::from_fn,
-    routing::{get, post, Router},
+    routing::{get, Router},
 };
 
 /// This enum contains all of the route strings in the application. This
@@ -28,9 +28,6 @@ pub enum Route {
     Htmx,
     InitAnon,
     Login,
-    Logout,
-    PasswordReset,
-    PasswordResetSecret(Option<String>),
     Ping,
     PrivacyPolicy,
     Register,
@@ -60,12 +57,6 @@ impl Route {
             Self::Htmx => "/generated/htmx-2.0.2".into(),
             Self::InitAnon => "/authentication/init-anon".into(),
             Self::Login => "/authentication/login".into(),
-            Self::Logout => "/authentication/logout".into(),
-            Self::PasswordReset => "/authentication/reset-password".into(),
-            Self::PasswordResetSecret(slug) => match slug {
-                Some(slug) => format!("/authentication/reset-password/{slug}"),
-                None => "/authentication/reset-password/:slug".into(),
-            },
             Self::Ping => "/ping".into(),
             Self::PrivacyPolicy => "/privacy".into(),
             Self::Register => "/authentication/register".into(),
@@ -99,15 +90,6 @@ impl std::fmt::Display for Route {
     }
 }
 
-/// In [crate::main], protected routes are registered in a router with
-/// [crate::middlware::auth] middleware. This causes any requesters who are not
-/// authenticated to be redirected to the login page before the request handlers
-/// are called.
-fn get_authenticated_routes() -> Router<models::AppState> {
-    Router::new()
-        .route(&Route::UserHome.as_string(), get(controllers::user_home))
-}
-
 /// In [crate::main], these routes are not protected by any authentication, so
 /// any requester can access these routes.
 fn get_public_routes() -> Router<models::AppState> {
@@ -119,38 +101,10 @@ fn get_public_routes() -> Router<models::AppState> {
             &Route::StaticTinyIcon.as_string(),
             get(controllers::get_tiny_icon),
         )
-        .route(&Route::InitAnon.as_string(), post(auth::init_anon))
-        .route(&Route::Login.as_string(), get(auth::get_login_form))
-        .route(&Route::Login.as_string(), post(auth::handle_login))
-        .route(&Route::Logout.as_string(), get(auth::logout))
-        .route(
-            &Route::PasswordReset.as_string(),
-            get(auth::get_password_reset_request),
-        )
-        .route(
-            &Route::PasswordReset.as_string(),
-            post(auth::handle_pw_reset_request),
-        )
-        .route(
-            &Route::PasswordResetSecret(None).as_string(),
-            get(auth::get_password_reset_form),
-        )
-        .route(
-            &Route::PasswordResetSecret(None).as_string(),
-            post(auth::handle_password_reset),
-        )
         .route(&Route::Ping.as_string(), get(controllers::pong))
         .route(
             &Route::PrivacyPolicy.as_string(),
             get(legal::get_privacy_policy),
-        )
-        .route(
-            &Route::Register.as_string(),
-            get(auth::get_registration_form),
-        )
-        .route(
-            &Route::Register.as_string(),
-            post(auth::handle_registration),
         )
         .route(
             &Route::RobotsTxt.as_string(),
@@ -194,15 +148,9 @@ fn get_public_routes() -> Router<models::AppState> {
 }
 
 pub fn get_routes() -> Router<models::AppState> {
-    let protected_routes = get_authenticated_routes()
-        .layer(from_fn(middleware::html_headers))
-        .layer(from_fn(middleware::auth));
-
     let public_routes = get_public_routes()
         .layer(from_fn(middleware::html_headers))
         .layer(from_fn(middleware::log));
 
-    Router::new()
-        .nest("/", protected_routes)
-        .nest("/", public_routes)
+    Router::new().nest("/", public_routes)
 }

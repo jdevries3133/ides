@@ -4,13 +4,9 @@ use anyhow::Result;
 use dotenvy::dotenv;
 use std::net::SocketAddr;
 
-mod auth;
 mod components;
-mod config;
 mod controllers;
 mod db_ops;
-mod errors;
-mod html_sanitize;
 mod htmx;
 mod legal;
 mod middleware;

@@ -6,7 +6,7 @@
 // are and clippy knows more than me, maybe not.
 #![allow(clippy::let_and_return)]
 
-use super::{auth::is_anon, prelude::*};
+use super::prelude::*;
 
 #[cfg(feature = "live_reload")]
 const LIVE_RELOAD_SCRIPT: &str = r#"<script>
@@ -293,52 +293,6 @@ impl Component for ExternalLink<'_> {
                   <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
                 </svg>
             </a>
-            "#
-        )
-    }
-}
-
-pub struct UserHome<'a> {
-    pub username: &'a str,
-}
-impl Component for UserHome<'_> {
-    fn render(&self) -> String {
-        let username = clean(self.username);
-        let log_out = Route::Logout;
-        let register_route = Route::Register;
-        let register_ui = if is_anon(self.username) {
-            format!(
-                r#"
-            <p class="text-sm">
-                You are an anonymous user. It was quick and easy to jump into
-                the app, but you should register for an account to create a
-                username and password. Your user ID won't change, so you'll
-                retain ownership of any data you create while anonymously
-                trying the app if you convert into a user.
-            </p>
-            <p class="text-sm">
-                Note that if you allow an anonymous user to sign out, they will
-                lose everything, so try to avoid that! I normally hide the
-                "log out" button from anonymous users, and only show it after
-                registration.
-            </p>
-            <a href="{register_route}">
-                <button class="bg-emerald-100 hover:bg-emerald-200 rounded p-1">
-                    Register
-                </button>
-            </a>
-            "#
-            )
-        } else {
-            "".into()
-        };
-        format!(
-            r#"
-            <div class="flex flex-col prose">
-                Hi, {username}!
-                <a class="link" href="{log_out}">Log Out</a>
-                {register_ui}
-            </div>
             "#
         )
     }
