@@ -177,8 +177,7 @@ impl Component for Home {
                         PostgreSQL, HTMX, Axum, & Tailwind CSS
                     </span>
                 </h2>
-                <form method="POST" action="{init_anon}">
-                    <input type="hidden" value="" name="timezone" id="timezone" />
+                <a href="{init_anon}">
                     <button
                         class="
                             bg-gradient-to-tr
@@ -197,7 +196,7 @@ impl Component for Home {
                             my-4
                         "
                     >Get Started</button>
-                    </form>
+                </a>
                 </div>
             </main>
             <div
@@ -212,8 +211,7 @@ impl Component for Home {
                     >
 
                         <div class="flex gap-3">
-                            <form method="POST" action="{init_anon}">
-                                <input type="hidden" value="" name="timezone" id="timezone" />
+                            <a href="{init_anon}">
                                 <div
                                     class="bg-gradient-to-tr from-blue-300
                                     to-indigo-300 rounded-full p-3 text-black"
@@ -243,7 +241,7 @@ impl Component for Home {
                                         "
                                     >Get Started</button>
                                 </div>
-                            </form>
+                            </a>
                             <div class="bg-teal-50 dark:bg-indigo-900 border-2
                                 border-indigo-800 inline-flex p-3 rounded-full
                                 items-center gap-3 mt-2 dark:text-slate-200
