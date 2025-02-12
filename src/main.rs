@@ -13,7 +13,6 @@ mod middleware;
 mod models;
 mod prelude;
 mod routes;
-mod smtp;
 
 #[tokio::main]
 async fn main() -> Result<()> {
