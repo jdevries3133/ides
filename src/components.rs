@@ -107,7 +107,7 @@ impl Component for Footer {
     fn render(&self) -> String {
         let privacy = Route::PrivacyPolicy;
         let tos = Route::TermsOfService;
-        let home = Route::UserHome;
+        let home = Route::Root;
         let about = Route::About;
         format!(
             r#"
@@ -147,8 +147,8 @@ impl Component for PageContainer<'_> {
 pub struct Home {}
 impl Component for Home {
     fn render(&self) -> String {
-        let login_route = Route::Login;
-        let init_anon = Route::InitAnon;
+        let login_route = Route::Root;
+        let init_anon = Route::Root;
         let footer = Footer {}.render();
         format!(
             r#"
@@ -334,53 +334,15 @@ impl Component for Saved<'_> {
 pub struct AboutPage;
 impl Component for AboutPage {
     fn render(&self) -> String {
-        let home = Route::UserHome;
-        format!(
-            r#"
-            <div class="prose dark:text-slate-200">
-                <h1 class="dark:text-slate-200">About Your App</h1>
-                <p><a class="link" href="{home}">Return Home</a></p>
-                <p>
-                    Tell the world about your app!
-                </p>
-            </div>
-            "#
-        )
-    }
-}
-
-pub struct AnonWarning;
-impl Component for AnonWarning {
-    fn render(&self) -> String {
-        let register = Route::Register;
-        format!(
-            r#"
-            <div class="flex items-center justify-center">
-                <a href="{register}">
-                    <div
-                        class="text-black text-xs inline-block bg-yellow-100
-                        p-1 rounded-lg my-2 max-w-prose"
-                    >
-                        <h1 class="text-lg font-bold text-center">
-                            Anon Warning
-                        </h1>
-                        <p class="text-base">
-                            You're still registered as an anonymous user, which
-                            means that you haven't shared a username, email, or
-                            password. If you reset your cookies, move to a
-                            different device, or loose your device, your account
-                            cannot be recovered! Click here to register your
-                            account so that you can create a password, login on
-                            multiple devices, or use your email to recover your
-                            account in case you forget your password.
-                        </p>
-                        <p class="text-lg">Click here to register!</p
-                        >
-                    </div>
-                </a>
-            </div>
-            "#
-        )
+        r#"
+        <div class="prose dark:text-slate-200">
+            <h1 class="dark:text-slate-200">About Your App</h1>
+            <p>
+                Tell the world about your app!
+            </p>
+        </div>
+        "#
+        .into()
     }
 }
 

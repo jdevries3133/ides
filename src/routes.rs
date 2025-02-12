@@ -26,11 +26,8 @@ pub enum Route {
     About,
     Favicon,
     Htmx,
-    InitAnon,
-    Login,
     Ping,
     PrivacyPolicy,
-    Register,
     RobotsTxt,
     Root,
     StaticAppleIcon,
@@ -43,7 +40,6 @@ pub enum Route {
     StaticSmallIcon,
     StaticTinyIcon,
     TermsOfService,
-    UserHome,
     /// Route which will return an empty string. This is mainly an HTMX utility
     /// to allow a component to easily be swapped with nothing.
     Void,
@@ -55,11 +51,8 @@ impl Route {
             Self::About => "/about".into(),
             Self::Favicon => "/favicon.ico".into(),
             Self::Htmx => "/generated/htmx-2.0.2".into(),
-            Self::InitAnon => "/authentication/init-anon".into(),
-            Self::Login => "/authentication/login".into(),
             Self::Ping => "/ping".into(),
             Self::PrivacyPolicy => "/privacy".into(),
-            Self::Register => "/authentication/register".into(),
             Self::Root => "/".into(),
             Self::RobotsTxt => "/robots.txt".into(),
             Self::StaticAppleIcon => "/static/apple_icon".into(),
@@ -78,7 +71,6 @@ impl Route {
             Self::StaticSmallIcon => "/static/xs-icon".into(),
             Self::StaticTinyIcon => "/static/xxs-icon".into(),
             Self::TermsOfService => "/terms".into(),
-            Self::UserHome => "/home".into(),
             Self::Void => "/void".into(),
         }
     }
