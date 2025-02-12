@@ -7,6 +7,7 @@ use std::net::SocketAddr;
 mod components;
 mod controllers;
 mod db_ops;
+mod error;
 mod htmx;
 mod legal;
 mod middleware;
