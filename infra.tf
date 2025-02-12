@@ -40,7 +40,7 @@ module "basic-deployment" {
   source  = "jdevries3133/basic-deployment/kubernetes"
   version = "3.2.0"
 
-  app_name  = "phat-stack"
+  app_name  = "ides"
   container = "jdevries3133/ides:${data.external.git_sha.result.output}"
   domain    = "ides.katetell.com"
 }
