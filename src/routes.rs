@@ -1,9 +1,9 @@
 //! All possible routes with their params are defined in a big enum.
 
-use super::{controllers, legal, middleware, models};
+use super::{auth, controllers, legal, middleware, models};
 use axum::{
     middleware::from_fn,
-    routing::{get, Router},
+    routing::{get, post, Router},
 };
 
 /// This enum contains all of the route strings in the application. This
@@ -24,6 +24,7 @@ use axum::{
 /// for the Axum router.
 pub enum Route {
     About,
+    Auth,
     Favicon,
     Htmx,
     Ping,
@@ -49,6 +50,7 @@ impl Route {
     pub fn as_string(&self) -> String {
         match self {
             Self::About => "/about".into(),
+            Self::Auth => "/auth".into(),
             Self::Favicon => "/favicon.ico".into(),
             Self::Htmx => "/generated/htmx-2.0.2".into(),
             Self::Ping => "/ping".into(),
@@ -87,6 +89,8 @@ impl std::fmt::Display for Route {
 fn get_public_routes() -> Router<models::AppState> {
     Router::new()
         .route(&Route::About.as_string(), get(controllers::about))
+        .route(&Route::Auth.as_string(), get(auth::ui::render_form))
+        .route(&Route::Auth.as_string(), post(auth::ui::handle_submit))
         .route(&Route::Favicon.as_string(), get(controllers::get_favicon))
         .route(&Route::Htmx.as_string(), get(controllers::get_htmx_js))
         .route(

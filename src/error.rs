@@ -1,32 +1,54 @@
 use axum::{http::StatusCode, response::IntoResponse};
 use std::fmt::Display;
 
-#[derive(Debug)]
-pub enum Err {}
+#[derive(Debug, PartialEq, Eq)]
+pub enum ErrT {
+    AuthMiddleware,
+    AuthNotAuthenticated,
+    AuthNonUtf8Cookie,
+    DbReturnedErronoeousRole,
+    SqlxError,
+}
 
+#[derive(Debug, PartialEq, Eq)]
 struct ErrFrame {
-    variant: Err,
+    variant: ErrT,
     ctx: Option<String>,
 }
 
-#[derive(Default)]
+#[derive(Debug, Default, Eq, PartialEq)]
 pub struct ErrStack {
     stack: Vec<ErrFrame>,
 }
 
+impl std::error::Error for ErrStack {
+    fn description(&self) -> &str {
+        "An error occurred"
+    }
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        None
+    }
+    fn cause(&self) -> Option<&dyn std::error::Error> {
+        None
+    }
+}
+
 impl ErrStack {
-    pub fn wrap(mut self, err: Err) -> Self {
+    pub fn wrap(mut self, err: ErrT) -> Self {
         self.stack.push(ErrFrame {
             variant: err,
             ctx: None,
         });
         self
     }
-    pub fn because(mut self, ctx: String) -> Self {
+    pub fn ctx(mut self, ctx: String) -> Self {
         if let Some(last) = self.stack.last_mut() {
             last.ctx = Some(ctx);
         }
         self
+    }
+    pub fn jenga(&self) -> impl Iterator<Item = &ErrT> {
+        self.stack.iter().rev().map(|e| &e.variant)
     }
 }
 

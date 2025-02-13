@@ -4,6 +4,7 @@ use anyhow::Result;
 use dotenvy::dotenv;
 use std::net::SocketAddr;
 
+mod auth;
 mod components;
 mod controllers;
 mod db_ops;
