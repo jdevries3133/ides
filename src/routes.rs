@@ -1,6 +1,6 @@
 //! All possible routes with their params are defined in a big enum.
 
-use super::{auth, controllers, legal, middleware, models};
+use super::{auth, book, controllers, legal, middleware, models};
 use axum::{
     middleware::from_fn,
     routing::{get, post, Router},
@@ -25,6 +25,7 @@ use axum::{
 pub enum Route {
     About,
     Auth,
+    Book,
     Favicon,
     Htmx,
     Ping,
@@ -51,6 +52,7 @@ impl Route {
         match self {
             Self::About => "/about".into(),
             Self::Auth => "/auth".into(),
+            Self::Book => "/book".into(),
             Self::Favicon => "/favicon.ico".into(),
             Self::Htmx => "/generated/htmx-2.0.2".into(),
             Self::Ping => "/ping".into(),
@@ -91,6 +93,7 @@ fn get_public_routes() -> Router<models::AppState> {
         .route(&Route::About.as_string(), get(controllers::about))
         .route(&Route::Auth.as_string(), get(auth::ui::render_form))
         .route(&Route::Auth.as_string(), post(auth::ui::handle_submit))
+        .route(&Route::Book.as_string(), get(book::view_book))
         .route(&Route::Favicon.as_string(), get(controllers::get_favicon))
         .route(&Route::Htmx.as_string(), get(controllers::get_htmx_js))
         .route(

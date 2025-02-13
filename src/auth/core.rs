@@ -1,12 +1,86 @@
 use crate::prelude::*;
 
-#[derive(Debug, Eq, PartialEq)]
+pub struct Auth {
+    #[allow(unused)]
+    pub name: String,
+    #[allow(unused)]
+    pub role: Role,
+    pub token_id: i32,
+}
+
+impl Auth {
+    pub async fn get(
+        db: impl PgExecutor<'_>,
+        token: &Token<'_>,
+    ) -> Result<Self> {
+        struct Qres {
+            name: String,
+            role: String,
+            token_id: i32,
+        }
+        let result = query_as!(
+            Qres,
+            "select t.id token_id, t.name, r.name as role
+            from token t
+            join role r on r.id = t.role_id
+            where t.token = $1",
+            token.0
+        )
+        .fetch_optional(db)
+        .await
+        .map_err(|e| {
+            ErrStack::default()
+                .wrap(ErrT::SqlxError)
+                .ctx(format!("Auth::get: {e}"))
+        })?;
+        match result {
+            Some(Qres {
+                name,
+                role,
+                token_id,
+            }) => {
+                let role: Role = role.try_into().map_err(|e: ErrStack| {
+                    e.wrap(ErrT::SqlxError).ctx("during Auth::get".into())
+                })?;
+                Ok(Auth {
+                    name,
+                    role,
+                    token_id,
+                })
+            }
+            None => Err(ErrStack::default()
+                .wrap(ErrT::AuthNotAuthenticated)
+                .ctx("token was not found in the DB".into())),
+        }
+    }
+}
+
+#[derive(Eq, PartialEq)]
 pub struct Token<'a>(pub &'a str);
+
+impl std::fmt::Debug for Token<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "Token([sensitive value omitted])")
+    }
+}
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Role {
     Reader,
     Admin,
+}
+
+impl TryInto<Role> for String {
+    type Error = ErrStack;
+    fn try_into(self) -> Result<Role> {
+        match self.as_str() {
+            "reader" => Ok(Role::Reader),
+            "admin" => Ok(Role::Admin),
+            _ => Err(ErrStack::default()
+                .wrap(ErrT::DbReturnedErronoeousRole)
+                .ctx(format!("role {self} does not match an expected type"))),
+        }
+    }
 }
 
 pub fn parse_from_headers(headers: &HeaderMap) -> Result<Token<'_>> {

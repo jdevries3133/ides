@@ -1,19 +1,6 @@
-use super::core::{parse_from_headers, Role, Token};
+use super::core::{parse_from_headers, Token};
 use crate::{components::Saved, prelude::*};
 use axum::http::HeaderValue;
-
-impl TryInto<Role> for String {
-    type Error = ErrStack;
-    fn try_into(self) -> Result<Role> {
-        match self.as_str() {
-            "reader" => Ok(Role::Reader),
-            "admin" => Ok(Role::Admin),
-            _ => Err(ErrStack::default()
-                .wrap(ErrT::DbReturnedErronoeousRole)
-                .ctx(format!("role {self} does not match an expected type"))),
-        }
-    }
-}
 
 struct TokenForm<'a> {
     token: Option<Token<'a>>,

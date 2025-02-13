@@ -5,6 +5,7 @@ use dotenvy::dotenv;
 use std::net::SocketAddr;
 
 mod auth;
+mod book;
 mod components;
 mod controllers;
 mod db_ops;
