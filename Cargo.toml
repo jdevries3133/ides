@@ -4,12 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["stripe"]
 live_reload = []
-use_stripe_test_instance = ["stripe"]
-enable_smtp_email = []
-stripe = []
-localhost_base_url = []
 
 [dependencies]
 ammonia = "3.3.0"

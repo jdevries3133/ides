@@ -38,7 +38,7 @@ ifndef CI
 	@# Locally, we want to ensure that `cargo sqlx prepare` was run, otherwise
 	@# the build will fail in CI. So, we'll run an offline build as part of
 	@# our checks
-	SQLX_OFFLINE=true cargo build --features enable_smtp_email
+	SQLX_OFFLINE=true cargo build
 endif
 	./scripts/lint_dbg.sh
 	cargo clippy -- -D warnings
@@ -46,7 +46,7 @@ endif
 	cargo test
 
 sqlx:
-	cargo sqlx prepare -- --features enable_smtp_email
+	cargo sqlx prepare
 
 build: setup
 	pnpm run build
@@ -72,7 +72,7 @@ endif
 dev: setup
 	npx concurrently --names 'tailwind,cargo,stripe' \
 		'pnpm run dev' \
-		"cargo watch -x 'run --features \"live_reload stripe use_stripe_test_instance localhost_base_url\"'" \
+		"cargo watch -x run" \
 		'make proxy-stripe-webhook' \
 
 bootstrap: setup _stop-db
@@ -127,8 +127,7 @@ build-container: setup
 	rustup target add x86_64-unknown-linux-musl
 	cargo build \
 		--release \
-		--target x86_64-unknown-linux-musl \
-		--features enable_smtp_email
+		--target x86_64-unknown-linux-musl
 	docker buildx build --load --platform linux/amd64 -t $(CONTAINER_EXACT_REF) .
 
 
