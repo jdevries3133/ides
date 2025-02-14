@@ -105,18 +105,13 @@ impl Component for Page<'_> {
 struct Footer;
 impl Component for Footer {
     fn render(&self) -> String {
-        let privacy = Route::PrivacyPolicy;
-        let tos = Route::TermsOfService;
-        let home = Route::Root;
-        let about = Route::About;
+        let auth = Route::Auth;
+        let book = Route::Book;
         format!(
             r#"
             <footer class="flex flex-wrap items-center justify-center gap-2 p-4">
-                <a class="link" href="{privacy}">Privacy Policy</a>
-                <a class="link" href="{tos}">Terms of Service</a>
-                <a class="link" href="{home}">Dashboard</a>
-                <a class="link" href="/">Home</a>
-                <a class="link" href="{about}">About</a>
+                <a class="link" href="{auth}">Configure Token</a>
+                <a class="link" href="{book}">Read Ides of August</a>
             </footer>
             "#
         )
@@ -139,158 +134,6 @@ impl Component for PageContainer<'_> {
                 {children}
                 {footer}
             </div>
-            "#
-        )
-    }
-}
-
-pub struct Home {}
-impl Component for Home {
-    fn render(&self) -> String {
-        let login_route = Route::Root;
-        let init_anon = Route::Root;
-        let footer = Footer {}.render();
-        format!(
-            r#"
-            <main
-                class="p-2 sm:p-4 md:p-8 bg-teal-50 dark:bg-indigo-1000
-                dark:text-slate-200 min-h-[100vh]"
-            >
-                <h1 class="mt-2 md:mt-8 text-3xl font-extrabold">
-                    &#127793; PHAT Stack &#129752;
-                </h1>
-                <div class="h-[90vh] flex justify-center flex-col">
-                <h2
-                    class="bg-gradient-to-br from-blue-600 via-green-500
-                    to-indigo-400 inline-block text-transparent bg-clip-text
-                    text-6xl"
-                >
-                    Web App Very Nice
-                </h2>
-                <h2
-                    class="text-4xl"
-                >
-                    Make a very nice web app:
-                    <span
-                        class="font-extrabold dark:text-indigo-200 text-indigo-500"
-                    >
-                        PostgreSQL, HTMX, Axum, & Tailwind CSS
-                    </span>
-                </h2>
-                <a href="{init_anon}">
-                    <button
-                        class="
-                            bg-gradient-to-tr
-                            from-blue-700
-                            to-indigo-700
-                            from-blue-100
-                            to-indigo-200
-                            p-2
-                            rounded
-                            shadow-md
-                            hover:shadow-sm
-                            dark:shadow-purple-200
-                            text-xl
-                            font-extrabold
-                            text-white
-                            my-4
-                        "
-                    >Get Started</button>
-                </a>
-                </div>
-            </main>
-            <div
-                class="bg-gradient-to-tr dark:from-emerald-900
-                dark:via-indigo-1000 dark:to-indigo-1000"
-            >
-                <div class="flex items-center justify-center">
-                    <div
-                        class="bg-emerald-700 max-w-md p-2 inline-block my-2
-                        text-lg text-center text-teal-50 dark:text-slate-200
-                        rounded"
-                    >
-
-                        <div class="flex gap-3">
-                            <a href="{init_anon}">
-                                <div
-                                    class="bg-gradient-to-tr from-blue-300
-                                    to-indigo-300 rounded-full p-3 text-black"
-                                >
-                                    <h3 class="text-lg font-semibold">Try it Out!</h3>
-                                    <p class="text-sm">
-                                        Click here to jump right in and start using
-                                        this app. Zero-commitment sign-up & 30 days
-                                        free, on us!
-                                    </p>
-                                    <button
-                                        class="
-                                            bg-gradient-to-tr
-                                            from-blue-700
-                                            to-indigo-700
-                                            from-blue-100
-                                            to-indigo-200
-                                            p-2
-                                            rounded
-                                            shadow-md
-                                            hover:shadow-sm
-                                            dark:shadow-purple-200
-                                            text-xl
-                                            font-extrabold
-                                            text-white
-                                            my-3
-                                        "
-                                    >Get Started</button>
-                                </div>
-                            </a>
-                            <div class="bg-teal-50 dark:bg-indigo-900 border-2
-                                border-indigo-800 inline-flex p-3 rounded-full
-                                items-center gap-3 mt-2 dark:text-slate-200
-                                self-center text-black"
-                            >
-                                <p>Have an account?</p>
-                                <a href="{login_route}">
-                                    <button
-                                        class="border-2 border-slate-800 rounded p-2
-                                        text-nowrap hover:bg-emerald-100 transition"
-                                    >Log In</button>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="flex items-center justify-center my-12">
-                </div>
-                <div class="flex items-center justify-center">
-                </div>
-            {footer}
-            </div>
-            <script>
-                (() => {{
-                    for (const el of document.querySelectorAll("[name='timezone'")) {{
-                        el.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                    }}
-                }})();
-            </script>
-            "#
-        )
-    }
-}
-pub struct ExternalLink<'a> {
-    pub href: &'a str,
-    pub children: Box<dyn Component>,
-}
-impl Component for ExternalLink<'_> {
-    fn render(&self) -> String {
-        let children = self.children.render();
-        let href = clean(self.href);
-        format!(
-            r#"
-            <a href={href}>
-                {children}
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3 h-3 inline">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-                </svg>
-            </a>
             "#
         )
     }

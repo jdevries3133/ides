@@ -10,6 +10,7 @@ pub enum ErrT {
     BookUi,
     DbReturnedErronoeousRole,
     SqlxError,
+    Invariant,
 }
 
 #[derive(Debug, PartialEq, Eq)]

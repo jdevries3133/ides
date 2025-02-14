@@ -1,5 +1,10 @@
 //! HTMX utils
 
+use axum::{
+    http::{HeaderMap, HeaderValue},
+    response::{IntoResponse, Redirect},
+};
+
 pub const fn get_client_script() -> &'static str {
     concat!(
         include_str!("./htmx-2.0.2.vendor.js"),
@@ -45,4 +50,14 @@ pub const fn get_client_script() -> &'static str {
         htmx.config.defaultSwapStyle = "outerHTML";
     "#
     )
+}
+
+pub fn redirect(mut headers: HeaderMap, to: &str) -> impl IntoResponse {
+    headers.insert(
+        "Hx-Redirect",
+        HeaderValue::from_str(to)
+            .unwrap_or(HeaderValue::from_str("/").unwrap()),
+    );
+    let response = Redirect::to(to);
+    (headers, response)
 }

@@ -72,7 +72,7 @@ endif
 dev: setup
 	npx concurrently --names 'tailwind,cargo,stripe' \
 		'pnpm run dev' \
-		"cargo watch -x run" \
+		"cargo watch -x 'run --features live_reload'" \
 		'make proxy-stripe-webhook' \
 
 bootstrap: setup _stop-db

@@ -8,11 +8,23 @@ pub struct Auth {
     pub token_id: i32,
 }
 
+pub enum AuthResult {
+    Authenticated(Auth),
+    NotAuthenticated,
+    Err(ErrStack),
+}
+
 impl Auth {
-    pub async fn get(
+    pub async fn from_headers(
         db: impl PgExecutor<'_>,
-        token: &Token<'_>,
-    ) -> Result<Self> {
+        headers: &HeaderMap,
+    ) -> AuthResult {
+        match parse_from_headers(headers) {
+            Ok(token) => Self::get(db, &token).await,
+            Err(e) => AuthResult::Err(e),
+        }
+    }
+    pub async fn get(db: impl PgExecutor<'_>, token: &Token<'_>) -> AuthResult {
         struct Qres {
             name: String,
             role: String,
@@ -32,25 +44,26 @@ impl Auth {
             ErrStack::default()
                 .wrap(ErrT::SqlxError)
                 .ctx(format!("Auth::get: {e}"))
-        })?;
+        });
         match result {
-            Some(Qres {
+            Ok(Some(Qres {
                 name,
                 role,
                 token_id,
-            }) => {
-                let role: Role = role.try_into().map_err(|e: ErrStack| {
+            })) => {
+                match role.try_into().map_err(|e: ErrStack| {
                     e.wrap(ErrT::SqlxError).ctx("during Auth::get".into())
-                })?;
-                Ok(Auth {
-                    name,
-                    role,
-                    token_id,
-                })
+                }) {
+                    Ok(role) => AuthResult::Authenticated(Auth {
+                        name,
+                        role,
+                        token_id,
+                    }),
+                    Err(e) => AuthResult::Err(e),
+                }
             }
-            None => Err(ErrStack::default()
-                .wrap(ErrT::AuthNotAuthenticated)
-                .ctx("token was not found in the DB".into())),
+            Ok(None) => AuthResult::NotAuthenticated,
+            Err(e) => AuthResult::Err(e),
         }
     }
 }

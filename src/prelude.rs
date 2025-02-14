@@ -1,6 +1,7 @@
 //! Dedupe of common internal and external imports
 
 pub use crate::{
+    auth::{Auth, AuthResult},
     components::{Component, Page, PageContainer},
     error::{ErrStack, ErrT},
     models::AppState,

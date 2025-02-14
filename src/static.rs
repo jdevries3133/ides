@@ -1,18 +1,10 @@
-use crate::{components, htmx, prelude::*};
+use crate::htmx;
 use axum::{
     http::{HeaderMap, HeaderValue},
     response::IntoResponse,
 };
 #[cfg(feature = "live_reload")]
 use serde::Deserialize;
-
-pub async fn root() -> impl IntoResponse {
-    components::Page {
-        title: "PHAT Stack",
-        children: &components::Home {},
-    }
-    .render()
-}
 
 #[cfg(feature = "live_reload")]
 #[derive(Deserialize)]
@@ -139,14 +131,4 @@ pub async fn get_robots_txt() -> impl IntoResponse {
 
 pub async fn void() -> &'static str {
     ""
-}
-
-pub async fn about() -> impl IntoResponse {
-    components::Page {
-        title: "About",
-        children: &components::PageContainer {
-            children: &components::AboutPage {},
-        },
-    }
-    .render()
 }
