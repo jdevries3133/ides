@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "insert into access_log (page, token_id)\n        values ($1, $2)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "266fbbbe1e4c7c32ff050ffbd406209f9f599a3c58e19c467b2421d0b4ce55db"
+}
