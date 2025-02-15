@@ -19,8 +19,9 @@ struct ErrFrame {
     ctx: Option<String>,
 }
 
-#[derive(Debug, Default, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq)]
 pub struct ErrStack {
+    /// The stack is constructed with at least one frame in [Self::new]
     stack: Vec<ErrFrame>,
 }
 
@@ -37,6 +38,13 @@ impl std::error::Error for ErrStack {
 }
 
 impl ErrStack {
+    pub fn new(root_err: ErrT) -> Self {
+        let frame = ErrFrame {
+            variant: root_err,
+            ctx: None,
+        };
+        Self { stack: vec![frame] }
+    }
     pub fn wrap(mut self, err: ErrT) -> Self {
         self.stack.push(ErrFrame {
             variant: err,
@@ -52,8 +60,17 @@ impl ErrStack {
     }
     /// Returns an iterator over error-types in the stack of errors, with
     /// the most recently occurring error first.
+    ///
+    /// Guaranteed to return at least one frame, because [Self::new] will
+    /// construct the error stack with an initial frame.
     pub fn jenga(&self) -> impl Iterator<Item = &ErrT> {
         self.stack.iter().rev().map(|e| &e.variant)
+    }
+    /// Peek the most recent error that occurred.
+    pub fn peek(&self) -> &ErrT {
+        self.jenga()
+            .next()
+            .expect("error stack has at least one frame")
     }
 }
 

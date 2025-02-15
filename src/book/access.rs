@@ -14,8 +14,7 @@ pub async fn log_access(
     .execute(db)
     .await
     .map_err(|e| {
-        ErrStack::default()
-            .wrap(ErrT::SqlxError)
+        ErrStack::new(ErrT::SqlxError)
             .ctx(format!("query error while recording log access: {e}"))
     })?;
 

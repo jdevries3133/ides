@@ -41,9 +41,7 @@ impl Auth {
         .fetch_optional(db)
         .await
         .map_err(|e| {
-            ErrStack::default()
-                .wrap(ErrT::SqlxError)
-                .ctx(format!("Auth::get: {e}"))
+            ErrStack::new(ErrT::SqlxError).ctx(format!("Auth::get: {e}"))
         });
         match result {
             Ok(Some(Qres {
@@ -89,8 +87,7 @@ impl TryInto<Role> for String {
         match self.as_str() {
             "reader" => Ok(Role::Reader),
             "admin" => Ok(Role::Admin),
-            _ => Err(ErrStack::default()
-                .wrap(ErrT::DbReturnedErronoeousRole)
+            _ => Err(ErrStack::new(ErrT::DbReturnedErronoeousRole)
                 .ctx(format!("role {self} does not match an expected type"))),
         }
     }
@@ -100,8 +97,7 @@ pub fn parse_from_headers(headers: &HeaderMap) -> Result<Token<'_>> {
     let cookie = headers.get("Cookie");
     if let Some(cookie) = cookie {
         let cookie_str = cookie.to_str().map_err(|e| {
-            ErrStack::default()
-                .wrap(ErrT::AuthNonUtf8Cookie)
+            ErrStack::new(ErrT::AuthNonUtf8Cookie)
                 .ctx(format!("cannot stringify cookie: {e}"))
         })?;
         for item in cookie_str.split(";") {
@@ -117,8 +113,7 @@ pub fn parse_from_headers(headers: &HeaderMap) -> Result<Token<'_>> {
         }
     }
 
-    Err(ErrStack::default()
-        .wrap(ErrT::AuthNotAuthenticated)
+    Err(ErrStack::new(ErrT::AuthNotAuthenticated)
         .ctx("parse_from_headers could not find a token".into()))
 }
 
@@ -151,7 +146,7 @@ mod test {
         h.insert("Cookie", HeaderValue::from_str("").unwrap());
         let result = parse_from_headers(&h);
         if let Err(e) = result {
-            assert_eq!(e.jenga().next(), Some(&ErrT::AuthNotAuthenticated));
+            assert_eq!(e.peek(), &ErrT::AuthNotAuthenticated);
         } else {
             panic!("expected result to be an error");
         }

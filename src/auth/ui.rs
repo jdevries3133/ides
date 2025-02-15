@@ -47,8 +47,7 @@ pub async fn post_handler(
     let mut headers = HeaderMap::new();
     let val =
         HeaderValue::from_str(&format!("token={token}")).map_err(|e| {
-            ErrStack::default()
-                .wrap(ErrT::AuthNonUtf8Cookie)
+            ErrStack::new(ErrT::AuthNonUtf8Cookie)
                 .ctx(format!("submitted auth cookie is not utf-8: {e}"))
         })?;
     headers.insert("Set-Cookie", val);
@@ -77,21 +76,10 @@ pub async fn post_handler(
 pub async fn get_handler(headers: HeaderMap) -> Result<impl IntoResponse> {
     match parse_from_headers(&headers) {
         Ok(token) => Ok(render_token_form(Some(token), false)),
-        Err(e) => {
-            let top_err = e.jenga().next();
-            match top_err {
-                Some(err) => match err {
-                    ErrT::AuthNotAuthenticated => {
-                        Ok(render_token_form(None, false))
-                    }
-                    _ => Err(e),
-                },
-                None => Err(e.wrap(ErrT::Invariant).ctx(
-                    "error stack is empty after parsing token from headers"
-                        .into(),
-                )),
-            }
-        }
+        Err(e) => match e.peek() {
+            ErrT::AuthNotAuthenticated => Ok(render_token_form(None, false)),
+            _ => Err(e),
+        },
     }
 }
 
