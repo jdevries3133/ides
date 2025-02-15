@@ -119,6 +119,7 @@ prod-shell-db:
 		-- /bin/sh -c 'psql postgresql://$(PROJECT_NAME):$$POSTGRES_PASSWORD@127.0.0.1:5432/$(PROJECT_NAME)'
 
 backup-prod:
+	mkdir -p ~/Desktop/$(PROJECT_NAME)_backups
 	kubectl exec \
 		-n $(PROJECT_NAME) \
 		pod/db-postgresql-0 \
