@@ -93,8 +93,18 @@ impl Display for ErrStack {
 }
 
 impl IntoResponse for ErrStack {
+    /// Maps errors into [StatusCode::INTERNAL_SERVER_ERROR], unless the stack
+    /// contains one or more frames of variant [ErrT::AuthNotAuthenticated].
     fn into_response(self) -> axum::response::Response {
         eprintln!("{self}");
-        (StatusCode::INTERNAL_SERVER_ERROR, "An error occurred").into_response()
+        if self
+            .jenga()
+            .any(|variant| matches!(variant, ErrT::AuthNotAuthenticated))
+        {
+            (StatusCode::FORBIDDEN, "not authenticated").into_response()
+        } else {
+            (StatusCode::INTERNAL_SERVER_ERROR, "An error occurred")
+                .into_response()
+        }
     }
 }
