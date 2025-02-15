@@ -503,6 +503,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "19d374276b40fb8bbdee95aef7c7fa6b5316ec764510eb64b8dd0e2ed0d7e7f5"
 
 [[package]]
+name = "create_admin"
+version = "0.1.0"
+dependencies = [
+ "sqlx",
+]
+
+[[package]]
 name = "crossbeam-queue"
 version = "0.3.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1265,6 +1272,35 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.98",
+]
+
+[[package]]
+name = "ides"
+version = "0.1.0"
+dependencies = [
+ "ammonia",
+ "anyhow",
+ "axum",
+ "axum-macros",
+ "chrono",
+ "chrono-tz",
+ "dotenvy",
+ "futures",
+ "futures-util",
+ "hex",
+ "hyper 0.14.32",
+ "markdown",
+ "rand",
+ "regex",
+ "reqwest",
+ "rustls 0.21.12",
+ "serde",
+ "serde_json",
+ "sqlx",
+ "tokio",
+ "tower 0.4.13",
+ "tower-http",
+ "uuid",
 ]
 
 [[package]]
@@ -3024,18 +3060,14 @@ version = "0.1.0"
 dependencies = [
  "ammonia",
  "anyhow",
- "async-trait",
  "axum",
  "axum-macros",
- "base64 0.21.7",
  "chrono",
  "chrono-tz",
  "dotenvy",
  "futures",
  "futures-util",
- "hex",
- "hmac",
- "hyper 0.14.32",
+ "ides",
  "markdown",
  "rand",
  "regex",
@@ -3043,7 +3075,6 @@ dependencies = [
  "rustls 0.21.12",
  "serde",
  "serde_json",
- "sha2",
  "sqlx",
  "tokio",
  "tower 0.4.13",

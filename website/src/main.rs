@@ -9,7 +9,6 @@ mod auth;
 mod book;
 mod components;
 mod db_ops;
-mod error;
 mod htmx;
 mod middleware;
 mod models;

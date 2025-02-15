@@ -1,10 +1,7 @@
 [package]
-name = "website"
+name = "ides"
 version = "0.1.0"
 edition = "2021"
-
-[features]
-live_reload = []
 
 [dependencies]
 ammonia = "3.3.0"
@@ -16,7 +13,8 @@ chrono-tz = { version = "0.8.4", features = ["serde"] }
 dotenvy = "0.15.7"
 futures = "0.3.28"
 futures-util = "0.3.29"
-ides = { version = "0.1.0", path = "../ides" }
+hex = "0.4.3"
+hyper = "0.14.27"
 markdown = "1.0.0-alpha.12"
 rand = "0.8.5"
 regex = "1.9.1"
