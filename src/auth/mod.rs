@@ -1,4 +1,4 @@
 mod core;
 pub mod ui;
 
-pub use core::{Auth, AuthResult};
+pub use core::{Auth, AuthResult, Role};

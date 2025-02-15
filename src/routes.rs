@@ -1,6 +1,6 @@
 //! All possible routes with their params are defined in a big enum.
 
-use super::{auth, book, middleware, models, r#static};
+use super::{admin, auth, book, middleware, models, r#static};
 use axum::{
     middleware::from_fn,
     routing::{get, post, Router},
@@ -23,6 +23,8 @@ use axum::{
 /// are provided, we'll construct the route with the `:id` template in it
 /// for the Axum router.
 pub enum Route {
+    AdminHome,
+    AdminImportBook,
     Auth,
     Book,
     Favicon,
@@ -46,6 +48,8 @@ pub enum Route {
 impl Route {
     pub fn as_string(&self) -> String {
         match self {
+            Self::AdminHome => "/admin".into(),
+            Self::AdminImportBook => "/admin/import-book".into(),
             Self::Auth => "/".into(),
             Self::Book => "/book".into(),
             Self::Favicon => "/favicon.ico".into(),
@@ -78,10 +82,17 @@ impl std::fmt::Display for Route {
     }
 }
 
-/// In [crate::main], these routes are not protected by any authentication, so
-/// any requester can access these routes.
-fn get_public_routes() -> Router<models::AppState> {
+pub fn get_routes() -> Router<models::AppState> {
     Router::new()
+        .route(&Route::AdminHome.as_string(), get(admin::home))
+        .route(
+            &Route::AdminImportBook.as_string(),
+            get(admin::import_book_ui),
+        )
+        .route(
+            &Route::AdminImportBook.as_string(),
+            post(admin::handle_import_book),
+        )
         .route(&Route::Auth.as_string(), get(auth::ui::get_handler))
         .route(&Route::Auth.as_string(), post(auth::ui::post_handler))
         .route(&Route::Book.as_string(), get(book::view_book))
@@ -126,12 +137,6 @@ fn get_public_routes() -> Router<models::AppState> {
             get(r#static::get_small_icon),
         )
         .route(&Route::Void.as_string(), get(r#static::void))
-}
-
-pub fn get_routes() -> Router<models::AppState> {
-    let public_routes = get_public_routes()
         .layer(from_fn(middleware::html_headers))
-        .layer(from_fn(middleware::log));
-
-    Router::new().nest("/", public_routes)
+        .layer(from_fn(middleware::log))
 }
