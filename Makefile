@@ -111,8 +111,12 @@ shell-db:
 	$(ENV) PGPASSWORD=$$POSTGRES_PASSWORD \
 		psql -U "$$POSTGRES_USER" -h 0.0.0.0 $$POSTGRES_DB
 
-proxy-prod-db:
-	kubectl -n $(PROJECT_NAME) port-forward service/db-postgresql 5433:5432
+prod-shell-db:
+	kubectl exec \
+		-it \
+		-n $(PROJECT_NAME) \
+		pod/db-postgresql-0 \
+		-- /bin/sh -c 'psql postgresql://$(PROJECT_NAME):$$POSTGRES_PASSWORD@127.0.0.1:5432/$(PROJECT_NAME)'
 
 backup-prod:
 	kubectl exec \
