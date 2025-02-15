@@ -14,4 +14,4 @@ pub use axum::{
 };
 pub use ides::prelude::*;
 pub use serde::Deserialize;
-pub use sqlx::{postgres::PgExecutor, query, query_as};
+pub use sqlx::query;

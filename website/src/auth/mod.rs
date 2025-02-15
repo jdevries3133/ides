@@ -1,4 +1,2 @@
-mod core;
 pub mod ui;
-
-pub use core::{Auth, AuthResult, Role};
+pub use ides::auth::{Auth, AuthResult, Role};

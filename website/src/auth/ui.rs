@@ -1,6 +1,6 @@
-use super::core::{parse_from_headers, Auth, AuthResult, Token};
 use crate::{components::Saved, prelude::*};
 use axum::{http::HeaderValue, response::Redirect};
+use ides::auth::{parse_from_headers, Auth, AuthResult, Token};
 
 #[derive(Default)]
 struct TokenForm<'a> {
