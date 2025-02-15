@@ -5,12 +5,14 @@ use std::fmt::Display;
 pub enum ErrT {
     AccessLog,
     AuthMiddleware,
-    AuthNotAuthenticated,
     AuthNonUtf8Cookie,
+    AuthNotAuthenticated,
     BookUi,
+    DbConnectionFailure,
+    DbMigrationFailure,
     DbReturnedErronoeousRole,
-    SqlxError,
     Invariant,
+    SqlxError,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -108,4 +110,3 @@ impl IntoResponse for ErrStack {
         }
     }
 }
-

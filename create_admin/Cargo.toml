@@ -1,0 +1,7 @@
+[package]
+name = "create_admin"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+sqlx = { version = "0.8.1", features = ["json", "postgres", "uuid", "chrono", "runtime-async-std-rustls" ] }

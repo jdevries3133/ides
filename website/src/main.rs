@@ -1,14 +1,13 @@
 //! A GPT-powered calorie counter.
 
-use anyhow::Result;
 use dotenvy::dotenv;
+use ides::prelude::*;
 use std::net::SocketAddr;
 
 mod admin;
 mod auth;
 mod book;
 mod components;
-mod db_ops;
 mod htmx;
 mod middleware;
 mod models;
@@ -20,8 +19,11 @@ mod r#static;
 async fn main() -> Result<()> {
     dotenv().ok();
 
-    let db = db_ops::create_pg_pool().await?;
-    sqlx::migrate!().run(&db).await?;
+    let db = ides::db::create_pg_pool().await?;
+    sqlx::migrate!().run(&db).await.map_err(|e| {
+        ErrStack::new(ErrT::DbMigrationFailure)
+            .ctx(format!("migrations failed: {e}"))
+    })?;
     let state = models::AppState { db };
 
     let app = routes::get_routes().with_state(state);

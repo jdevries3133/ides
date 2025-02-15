@@ -1,6 +1,5 @@
 //! Dedupe of common internal and external imports
 
-pub use ides::error::{ErrT, ErrStack};
 pub use crate::{
     auth::{Auth, AuthResult},
     components::{Component, Page, PageContainer},
@@ -13,7 +12,6 @@ pub use axum::{
     http::HeaderMap,
     response::{IntoResponse, Response},
 };
+pub use ides::prelude::*;
 pub use serde::Deserialize;
 pub use sqlx::{postgres::PgExecutor, query, query_as};
-
-pub type Result<T> = std::result::Result<T, ErrStack>;

@@ -8,7 +8,6 @@ live_reload = []
 
 [dependencies]
 ammonia = "3.3.0"
-anyhow = "1.0.69"
 axum = "0.7.5"
 axum-macros = "0.4.1"
 chrono = { version = "0.4.26", features = ["serde"] }
