@@ -82,7 +82,7 @@ bootstrap: setup _stop-db
 	@echo "Bootstrap complete! The app is running now, but you need to stop it"
 	@echo "and run 'make dev' to get live-reloading started."
 	@echo "===================================================================="
-	$(ENV) ./target/debug/phat_stack
+	$(ENV) ./target/debug/ides
 
 deploy:
 ifdef CI
