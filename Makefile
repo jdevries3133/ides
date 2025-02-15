@@ -32,7 +32,7 @@ CONTAINER_EXACT_REF=$(DOCKER_ACCOUNT)/$(PROJECT_NAME):$(TAG)
 
 check: setup
 ifdef CI
-	pnpm run build
+	cd website && pnpm run build
 endif
 ifndef CI
 	@# Locally, we want to ensure that `cargo sqlx prepare` was run, otherwise
@@ -46,10 +46,10 @@ endif
 	cargo test
 
 sqlx:
-	cargo sqlx prepare
+	cd website && cargo sqlx prepare
 
 build: setup
-	pnpm run build
+	cd website && pnpm run build
 	cargo build --release
 
 setup:
@@ -57,8 +57,8 @@ setup:
 ifdef CI
 	npm i -g pnpm
 endif
-	[[ ! -d node_modules ]] \
-		&& pnpm install \
+	[[ ! -d website/node_modules ]] \
+		&& (cd website && pnpm install) \
 		|| true
 ifndef CI
 	@# we only want the `.env` file locally in practice. We never run the app
@@ -71,8 +71,8 @@ endif
 
 dev: setup
 	npx concurrently --names 'tailwind,cargo,stripe' \
-		'pnpm run dev' \
-		"cargo watch -x 'run --features live_reload'"
+		'cd website && pnpm run dev' \
+		"cargo watch -x 'run --bin website --features live_reload'"
 
 bootstrap: setup _stop-db
 	SQLX_OFFLINE=true cargo build
@@ -127,7 +127,7 @@ backup-prod:
 		> ~/Desktop/$(PROJECT_NAME)_backups/backup-$(shell date '+%m-%d-%Y__%H:%M:%S').sql
 
 build-container: setup
-	pnpm run build
+	cd website && pnpm run build
 	rustup target add x86_64-unknown-linux-musl
 	cargo build \
 		--release \
@@ -150,11 +150,6 @@ debug-container:
 	$(ENV) docker run \
 		-e RUST_BACKTRACE=1 \
 		-e DATABASE_URL="$$DATABASE_URL" \
-		-e SESSION_SECRET="$$SESSION_SECRET" \
-		-e STRIPE_API_KEY="$$STRIPE_API_KEY" \
-		-e STRIPE_WEBHOOK_SIGNING_SECRET="$$STRIPE_WEBHOOK_SIGNING_SECRET" \
-		-e SMTP_EMAIL_USERNAME="$$SMTP_EMAIL_USERNAME" \
-		-e SMTP_EMAIL_PASSWORD="$$SMTP_EMAIL_PASSWORD" \
 		-p 8000:8000 \
 		$(CONTAINER_EXACT_REF)
 
