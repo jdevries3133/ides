@@ -1,7 +1,5 @@
 //! A GPT-powered calorie counter.
 
-#![feature(try_trait_v2)]
-
 use anyhow::Result;
 use dotenvy::dotenv;
 use std::net::SocketAddr;
@@ -20,7 +18,6 @@ mod r#static;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    println!("bool: {}", bool::default());
     dotenv().ok();
 
     let db = db_ops::create_pg_pool().await?;

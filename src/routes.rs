@@ -82,8 +82,8 @@ impl std::fmt::Display for Route {
 /// any requester can access these routes.
 fn get_public_routes() -> Router<models::AppState> {
     Router::new()
-        .route(&Route::Auth.as_string(), get(auth::ui::render_form))
-        .route(&Route::Auth.as_string(), post(auth::ui::handle_submit))
+        .route(&Route::Auth.as_string(), get(auth::ui::get_handler))
+        .route(&Route::Auth.as_string(), post(auth::ui::post_handler))
         .route(&Route::Book.as_string(), get(book::view_book))
         .route(&Route::Favicon.as_string(), get(r#static::get_favicon))
         .route(&Route::Htmx.as_string(), get(r#static::get_htmx_js))

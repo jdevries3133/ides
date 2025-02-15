@@ -50,6 +50,8 @@ impl ErrStack {
         }
         self
     }
+    /// Returns an iterator over error-types in the stack of errors, with
+    /// the most recently occurring error first.
     pub fn jenga(&self) -> impl Iterator<Item = &ErrT> {
         self.stack.iter().rev().map(|e| &e.variant)
     }

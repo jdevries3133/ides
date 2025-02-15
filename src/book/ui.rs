@@ -25,5 +25,29 @@ async fn book_view(
         .await
         .map_err(|e| e.wrap(ErrT::BookUi))?;
 
-    Ok("nice book".into_response())
+    Ok(Page {
+        title: "Ides of August",
+        children: &PageContainer {
+            children: &Reader {
+                reader_name: &auth.name,
+            },
+        },
+    }
+    .render())
+}
+
+struct Reader<'a> {
+    reader_name: &'a str,
+}
+impl Component for Reader<'_> {
+    fn render(&self) -> String {
+        let reader_name = self.reader_name;
+        format!(
+            r#"
+            <div class="w-full h-full">
+            <p>reading as {reader_name}</p>
+            </div>
+            "#
+        )
+    }
 }

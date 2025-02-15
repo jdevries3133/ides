@@ -1,6 +1,6 @@
 use super::core::{parse_from_headers, Auth, AuthResult, Token};
-use crate::{components::Saved, htmx, prelude::*};
-use axum::http::HeaderValue;
+use crate::{components::Saved, prelude::*};
+use axum::{http::HeaderValue, response::Redirect};
 
 #[derive(Default)]
 struct TokenForm<'a> {
@@ -23,7 +23,7 @@ impl Component for TokenForm<'_> {
         format!(
             r#"
             <div class="flex items-center justify-center h-[80vh]">
-                <form class="flex flex-col" hx-post="{token_form_route}">
+                <form class="flex flex-col" method="POST" action="{token_form_route}">
                     <label for="token">Token</label>
                     <input id="token" name="token" type="text" value="{token}" />
                     {validation_msg}
@@ -40,7 +40,7 @@ pub struct Payload {
     token: String,
 }
 
-pub async fn handle_submit(
+pub async fn post_handler(
     State(AppState { db }): State<AppState>,
     Form(Payload { token }): Form<Payload>,
 ) -> Result<impl IntoResponse> {
@@ -55,7 +55,7 @@ pub async fn handle_submit(
 
     match Auth::get(&db, &Token(&token)).await {
         AuthResult::Authenticated(_) => {
-            Ok(htmx::redirect(headers, &Route::Book.as_string())
+            Ok((headers, Redirect::to(&Route::Book.as_string()))
                 .into_response())
         }
         AuthResult::NotAuthenticated => Ok((
@@ -65,11 +65,7 @@ pub async fn handle_submit(
                     message: "token updated",
                 }
                 .render(),
-                TokenForm {
-                    token: Some(Token(&token)),
-                    indicate_token_is_invalid: !token.is_empty(),
-                }
-                .render(),
+                render_token_form(Some(Token(&token)), !token.is_empty()),
             ]
             .join(""),
         )
@@ -78,16 +74,39 @@ pub async fn handle_submit(
     }
 }
 
-pub async fn render_form(headers: HeaderMap) -> Result<impl IntoResponse> {
-    let token = parse_from_headers(&headers)?;
-    Ok(Page {
+pub async fn get_handler(headers: HeaderMap) -> Result<impl IntoResponse> {
+    match parse_from_headers(&headers) {
+        Ok(token) => Ok(render_token_form(Some(token), false)),
+        Err(e) => {
+            let top_err = e.jenga().next();
+            match top_err {
+                Some(err) => match err {
+                    ErrT::AuthNotAuthenticated => {
+                        Ok(render_token_form(None, false))
+                    }
+                    _ => Err(e),
+                },
+                None => Err(e.wrap(ErrT::Invariant).ctx(
+                    "error stack is empty after parsing token from headers"
+                        .into(),
+                )),
+            }
+        }
+    }
+}
+
+fn render_token_form(
+    token: Option<Token>,
+    indicate_token_is_invalid: bool,
+) -> String {
+    Page {
         title: "Configure token",
         children: &PageContainer {
             children: &TokenForm {
-                token: Some(token),
-                indicate_token_is_invalid: false,
+                token,
+                indicate_token_is_invalid,
             },
         },
     }
-    .render())
+    .render()
 }
