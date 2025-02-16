@@ -1,5 +1,5 @@
 [workspace]
-members = ["create_admin", "ides",
+members = ["create_token", "ides",
     "website",
 ]
 

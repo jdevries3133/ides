@@ -13,6 +13,7 @@ pub enum ErrT {
     DbReturnedErronoeousRole,
     Invariant,
     SqlxError,
+    ValidationError,
 }
 
 #[derive(Debug, PartialEq, Eq)]

@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select t.id token_id, t.name, r.name as role\n            from token t\n            join role r on r.id = t.role_id\n            where t.token_digest = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "token_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "role",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "609e03ef90e1f3aff386e81c2f7a19e0bb0c39c677937c4b24476bd5571a8005"
+}
