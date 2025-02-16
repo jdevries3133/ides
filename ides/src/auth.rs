@@ -1,4 +1,5 @@
-use crate::prelude::*;
+use crate::{bytes::Bytes, prelude::*};
+use aws_lc_rs::digest::{Context, Digest, SHA256};
 
 pub struct Auth {
     #[allow(unused)]
@@ -19,12 +20,12 @@ impl Auth {
         db: impl PgExecutor<'_>,
         headers: &HeaderMap,
     ) -> AuthResult {
-        match parse_from_headers(headers) {
+        match Token::parse_from_headers(headers) {
             Ok(token) => Self::get(db, &token).await,
             Err(e) => AuthResult::Err(e),
         }
     }
-    pub async fn get(db: impl PgExecutor<'_>, token: &Token<'_>) -> AuthResult {
+    pub async fn get(db: impl PgExecutor<'_>, token: &Token) -> AuthResult {
         struct Qres {
             name: String,
             role: String,
@@ -36,7 +37,7 @@ impl Auth {
             from token t
             join role r on r.id = t.role_id
             where t.token = $1",
-            token.0
+            token.hex_digest()
         )
         .fetch_optional(db)
         .await
@@ -67,9 +68,47 @@ impl Auth {
 }
 
 #[derive(Eq, PartialEq)]
-pub struct Token<'a>(pub &'a str);
+pub struct Token(pub String);
 
-impl std::fmt::Debug for Token<'_> {
+impl Token {
+    fn digest(&self) -> Digest {
+        let mut ctx = Context::new(&SHA256);
+        ctx.update(self.0.as_bytes());
+        ctx.finish()
+    }
+    pub fn hex_digest(&self) -> String {
+        let digest = self.digest();
+        digest.as_ref().to_hex()
+    }
+    pub fn parse_from_headers(headers: &HeaderMap) -> Result<Self> {
+        let cookie = headers.get("Cookie");
+        if let Some(cookie) = cookie {
+            let cookie_str = cookie.to_str().map_err(|e| {
+                ErrStack::new(ErrT::AuthNonUtf8Cookie)
+                    .ctx(format!("cannot stringify cookie: {e}"))
+            })?;
+            for item in cookie_str.split(";") {
+                let item = item.trim();
+                let mut key_val = item.split("=");
+                let key = key_val.next();
+                let val = key_val.next();
+                if let (Some(key), Some(val)) = (key, val) {
+                    if key.trim() == "token" {
+                        return Ok(Self(val.trim().to_string()));
+                    }
+                };
+            }
+        }
+
+        Err(ErrStack::new(ErrT::AuthNotAuthenticated)
+            .ctx("parse_from_headers could not find a token".into()))
+    }
+    pub fn display_secret_value(&self) -> &str {
+        &self.0
+    }
+}
+
+impl std::fmt::Debug for Token {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "Token([sensitive value omitted])")
     }
@@ -93,30 +132,6 @@ impl TryInto<Role> for String {
     }
 }
 
-pub fn parse_from_headers(headers: &HeaderMap) -> Result<Token<'_>> {
-    let cookie = headers.get("Cookie");
-    if let Some(cookie) = cookie {
-        let cookie_str = cookie.to_str().map_err(|e| {
-            ErrStack::new(ErrT::AuthNonUtf8Cookie)
-                .ctx(format!("cannot stringify cookie: {e}"))
-        })?;
-        for item in cookie_str.split(";") {
-            let item = item.trim();
-            let mut key_val = item.split("=");
-            let key = key_val.next();
-            let val = key_val.next();
-            if let (Some(key), Some(val)) = (key, val) {
-                if key.trim() == "token" {
-                    return Ok(Token(val.trim()));
-                }
-            };
-        }
-    }
-
-    Err(ErrStack::new(ErrT::AuthNotAuthenticated)
-        .ctx("parse_from_headers could not find a token".into()))
-}
-
 #[cfg(test)]
 mod test {
     use super::*;
@@ -125,14 +140,14 @@ mod test {
     fn case(cookie: &str, expect: Result<Token>) {
         let mut h = HeaderMap::new();
         h.insert("Cookie", HeaderValue::from_str(cookie).unwrap());
-        let result = parse_from_headers(&h);
+        let result = Token::parse_from_headers(&h);
         assert_eq!(result, expect);
     }
 
     #[test]
     fn test_parse_from_empty_headers() {
         let h = HeaderMap::new();
-        let result = parse_from_headers(&h);
+        let result = Token::parse_from_headers(&h);
         if let Err(e) = result {
             assert_eq!(e.jenga().next(), Some(&ErrT::AuthNotAuthenticated));
         } else {
@@ -144,7 +159,7 @@ mod test {
     fn test_parse_from_empty_cookie() {
         let mut h = HeaderMap::new();
         h.insert("Cookie", HeaderValue::from_str("").unwrap());
-        let result = parse_from_headers(&h);
+        let result = Token::parse_from_headers(&h);
         if let Err(e) = result {
             assert_eq!(e.peek(), &ErrT::AuthNotAuthenticated);
         } else {
@@ -154,19 +169,19 @@ mod test {
 
     #[test]
     fn test_parse_from_two_jar_cookie_first_spot() {
-        case("token=foo ; bar=baz", Ok(Token("foo")));
+        case("token=foo ; bar=baz", Ok(Token("foo".into())));
     }
 
     #[test]
     fn test_parse_from_two_jar_cookie_second_spot() {
-        case("bar=baz; token= foo;", Ok(Token("foo")));
+        case("bar=baz; token= foo;", Ok(Token("foo".into())));
     }
 
     #[test]
     fn test_parse_with_weird_whitespace() {
         case(
             "bar = baz ; token=boo bar ; other=value",
-            Ok(Token("boo bar")),
+            Ok(Token("boo bar".into())),
         );
     }
 
@@ -174,7 +189,7 @@ mod test {
     fn test_case_insensitive() {
         let mut h = HeaderMap::new();
         h.insert("cookie", HeaderValue::from_str("token=foo").unwrap());
-        let result = parse_from_headers(&h);
-        assert_eq!(result, Ok(Token("foo")));
+        let result = Token::parse_from_headers(&h);
+        assert_eq!(result, Ok(Token("foo".into())));
     }
 }

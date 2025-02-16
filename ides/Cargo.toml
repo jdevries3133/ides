@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 ammonia = "3.3.0"
+aws-lc-rs = "1.12.2"
 axum = "0.7.5"
 axum-macros = "0.4.1"
 chrono = { version = "0.4.26", features = ["serde"] }
@@ -12,7 +13,6 @@ chrono-tz = { version = "0.8.4", features = ["serde"] }
 dotenvy = "0.15.7"
 futures = "0.3.28"
 futures-util = "0.3.29"
-hex = "0.4.3"
 hyper = "0.14.27"
 markdown = "1.0.0-alpha.12"
 rand = "0.8.5"

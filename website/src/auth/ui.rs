@@ -1,17 +1,17 @@
 use crate::{components::Saved, prelude::*};
 use axum::{http::HeaderValue, response::Redirect};
-use ides::auth::{parse_from_headers, Auth, AuthResult, Token};
+use ides::auth::{Auth, AuthResult, Token};
 
 #[derive(Default)]
 struct TokenForm<'a> {
-    token: Option<Token<'a>>,
+    token: Option<&'a Token>,
     indicate_token_is_invalid: bool,
 }
 impl Component for TokenForm<'_> {
     fn render(&self) -> String {
         let token_form_route = Route::Auth;
         let token = if let Some(token) = &self.token {
-            token.0
+            token.display_secret_value()
         } else {
             ""
         };
@@ -52,7 +52,8 @@ pub async fn post_handler(
         })?;
     headers.insert("Set-Cookie", val);
 
-    match Auth::get(&db, &Token(&token)).await {
+    let token = Token(token);
+    match Auth::get(&db, &token).await {
         AuthResult::Authenticated(_) => {
             Ok((headers, Redirect::to(&Route::Book.as_string()))
                 .into_response())
@@ -64,7 +65,7 @@ pub async fn post_handler(
                     message: "token updated",
                 }
                 .render(),
-                render_token_form(Some(Token(&token)), !token.is_empty()),
+                render_token_form(Some(&token), !token.0.is_empty()),
             ]
             .join(""),
         )
@@ -74,8 +75,8 @@ pub async fn post_handler(
 }
 
 pub async fn get_handler(headers: HeaderMap) -> Result<impl IntoResponse> {
-    match parse_from_headers(&headers) {
-        Ok(token) => Ok(render_token_form(Some(token), false)),
+    match Token::parse_from_headers(&headers) {
+        Ok(token) => Ok(render_token_form(Some(&token), false)),
         Err(e) => match e.peek() {
             ErrT::AuthNotAuthenticated => Ok(render_token_form(None, false)),
             _ => Err(e),
@@ -84,7 +85,7 @@ pub async fn get_handler(headers: HeaderMap) -> Result<impl IntoResponse> {
 }
 
 fn render_token_form(
-    token: Option<Token>,
+    token: Option<&Token>,
     indicate_token_is_invalid: bool,
 ) -> String {
     Page {
