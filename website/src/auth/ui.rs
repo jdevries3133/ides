@@ -52,7 +52,7 @@ pub async fn post_handler(
         })?;
     headers.insert("Set-Cookie", val);
 
-    let token = Token(token);
+    let token = Token::new(token);
     match Auth::get(&db, &token).await {
         AuthResult::Authenticated(_) => {
             Ok((headers, Redirect::to(&Route::Book.as_string()))
@@ -65,7 +65,7 @@ pub async fn post_handler(
                     message: "token updated",
                 }
                 .render(),
-                render_token_form(Some(&token), !token.0.is_empty()),
+                render_token_form(Some(&token), !token.is_empty()),
             ]
             .join(""),
         )

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "select t.id token_id, t.name, r.name as role\n            from token t\n            join role r on r.id = t.role_id\n            where t.token = $1",
+  "query": "select t.id token_id, t.name, r.name as role\n            from token t\n            join role r on r.id = t.role_id\n            where t.token_digest = $1",
   "describe": {
     "columns": [
       {
@@ -30,5 +30,5 @@
       false
     ]
   },
-  "hash": "9fd6b5b119b3cf55b77488cefb67d8ca20ab4efc669e91f96a430e8352c017d2"
+  "hash": "609e03ef90e1f3aff386e81c2f7a19e0bb0c39c677937c4b24476bd5571a8005"
 }

@@ -1,5 +1,5 @@
 use crate::{bytes::Bytes, prelude::*};
-use aws_lc_rs::digest::{Context, Digest, SHA256};
+use aws_lc_rs::digest::{Context, SHA256};
 
 pub struct Auth {
     #[allow(unused)]
@@ -26,6 +26,7 @@ impl Auth {
         }
     }
     pub async fn get(db: impl PgExecutor<'_>, token: &Token) -> AuthResult {
+        #[derive(Debug)]
         struct Qres {
             name: String,
             role: String,
@@ -36,8 +37,8 @@ impl Auth {
             "select t.id token_id, t.name, r.name as role
             from token t
             join role r on r.id = t.role_id
-            where t.token = $1",
-            token.hex_digest()
+            where t.token_digest = $1",
+            token.sha256_hex()
         )
         .fetch_optional(db)
         .await
@@ -68,16 +69,16 @@ impl Auth {
 }
 
 #[derive(Eq, PartialEq)]
-pub struct Token(pub String);
+pub struct Token(String);
 
 impl Token {
-    fn digest(&self) -> Digest {
+    pub fn new(token: String) -> Self {
+        Self(token)
+    }
+    pub fn sha256_hex(&self) -> String {
         let mut ctx = Context::new(&SHA256);
         ctx.update(self.0.as_bytes());
-        ctx.finish()
-    }
-    pub fn hex_digest(&self) -> String {
-        let digest = self.digest();
+        let digest = ctx.finish();
         digest.as_ref().to_hex()
     }
     pub fn parse_from_headers(headers: &HeaderMap) -> Result<Self> {
@@ -106,6 +107,9 @@ impl Token {
     pub fn display_secret_value(&self) -> &str {
         &self.0
     }
+    pub fn is_empty(&self) -> bool {
+        self.0.is_empty()
+    }
 }
 
 impl std::fmt::Debug for Token {
@@ -128,6 +132,15 @@ impl TryInto<Role> for String {
             "admin" => Ok(Role::Admin),
             _ => Err(ErrStack::new(ErrT::DbReturnedErronoeousRole)
                 .ctx(format!("role {self} does not match an expected type"))),
+        }
+    }
+}
+
+impl From<Role> for i32 {
+    fn from(val: Role) -> Self {
+        match val {
+            Role::Reader => 1,
+            Role::Admin => 2,
         }
     }
 }

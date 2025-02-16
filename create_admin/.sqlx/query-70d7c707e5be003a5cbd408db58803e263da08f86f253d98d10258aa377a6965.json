@@ -1,0 +1,16 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "insert into token\n        (\n            token_digest,\n            name,\n            role_id\n        ) values ($1, $2, $3)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "70d7c707e5be003a5cbd408db58803e263da08f86f253d98d10258aa377a6965"
+}

@@ -48,6 +48,7 @@ endif
 sqlx:
 	cd website && cargo sqlx prepare
 	cd ides && cargo sqlx prepare
+	cd create_admin && cargo sqlx prepare
 
 build: setup
 	cd website && pnpm run build

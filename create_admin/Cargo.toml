@@ -1,7 +1,11 @@
 [package]
-name = "create_admin"
+name = "create-admin"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+aws-lc-rs = "1.12.2"
+clap = { version = "4.5.29", features = ["derive"] }
+ides = { version = "0.1.0", path = "../ides" }
 sqlx = { version = "0.8.1", features = ["json", "postgres", "uuid", "chrono", "runtime-async-std-rustls" ] }
+tokio = "1.43.0"
