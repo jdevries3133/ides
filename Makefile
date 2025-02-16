@@ -120,6 +120,9 @@ prod-shell-db:
 		pod/db-postgresql-0 \
 		-- /bin/sh -c 'psql postgresql://$(PROJECT_NAME):$$POSTGRES_PASSWORD@127.0.0.1:5432/$(PROJECT_NAME)'
 
+proxy-prod-db:
+	kubectl -n $(PROJECT_NAME) port-forward service/db-postgresql 5433:5432
+
 backup-prod:
 	mkdir -p ~/Desktop/$(PROJECT_NAME)_backups
 	kubectl exec \
