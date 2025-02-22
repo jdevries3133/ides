@@ -48,7 +48,7 @@ endif
 sqlx:
 	cd website && cargo sqlx prepare
 	cd ides && cargo sqlx prepare
-	cd create_user && cargo sqlx prepare
+	cd create_token && cargo sqlx prepare
 
 build: setup
 	cd website && pnpm run build
@@ -72,6 +72,8 @@ ifndef CI
 endif
 
 dev: setup
+	$(ENV) cargo run --bin create-token -- --name tmp --role admin
+	echo "^^ admin user for development"
 	npx concurrently --names 'tailwind,cargo,stripe' \
 		'cd website && pnpm run dev' \
 		"cargo watch -x 'run --bin website --features live_reload'"
@@ -84,7 +86,7 @@ bootstrap: setup _stop-db
 	@echo "Bootstrap complete! The app is running now, but you need to stop it"
 	@echo "and run 'make dev' to get live-reloading started."
 	@echo "===================================================================="
-	$(ENV) ./target/debug/ides
+	$(ENV) ./target/debug/website
 
 deploy:
 ifdef CI

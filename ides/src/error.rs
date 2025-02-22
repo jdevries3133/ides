@@ -4,6 +4,7 @@ use std::fmt::Display;
 #[derive(Debug, PartialEq, Eq)]
 pub enum ErrT {
     AccessLog,
+    AdminBook,
     AuthMiddleware,
     AuthNonUtf8Cookie,
     AuthNotAuthenticated,

@@ -1,5 +1,6 @@
 use super::nav::{nav_helper, AdminNav};
 use crate::prelude::*;
+use ides::content::Book;
 
 pub async fn import_book_ui(
     State(AppState { db }): State<AppState>,
@@ -41,8 +42,17 @@ pub struct Payload {
 }
 
 pub async fn handle_import_book(
+    State(AppState { db }): State<AppState>,
+    headers: HeaderMap,
     Form(Payload { content }): Form<Payload>,
 ) -> Result<impl IntoResponse> {
-    println!("{content}");
-    Ok("OK")
+    match nav_helper(Auth::from_headers(&db, &headers).await) {
+        AdminNav::IsAdmin => {
+            let book = Book::from_raw_plain_text(&content);
+            let book = book.persist(&db).await?;
+            Ok(format!("OK; id = {}", book.id).into_response())
+        }
+        AdminNav::GetOuttaHere(response) => Ok(response),
+        AdminNav::Err(e) => Err(e),
+    }
 }

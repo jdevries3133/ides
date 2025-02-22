@@ -3,6 +3,8 @@
 use crate::prelude::*;
 use sqlx::postgres::PgPoolOptions;
 
+pub const CONNECTION_POOL_SIZE: u32 = 80;
+
 pub async fn create_pg_pool() -> Result<sqlx::Pool<sqlx::Postgres>> {
     let db_url = &std::env::var("DATABASE_URL")
         .expect("database url to be defined in the environment")[..];
@@ -10,7 +12,7 @@ pub async fn create_pg_pool() -> Result<sqlx::Pool<sqlx::Postgres>> {
     PgPoolOptions::new()
         // Postgres default max connections is 100, and we'll take 'em
         // https://www.postgresql.org/docs/current/runtime-config-connection.html
-        .max_connections(80)
+        .max_connections(CONNECTION_POOL_SIZE)
         .connect(db_url)
         .await
         .map_err(|e| {
