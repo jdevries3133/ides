@@ -6,11 +6,11 @@
 # database connection string from localhost:5432 to `host.docker.internal`
 # on macOS. On Linux, pass the `--net=host` flag to Docker when we call
 # `docker run` inside the Makefile in the `start-db` rule.
-DATABASE_URL=postgres://you:somepassword@localhost:5432/ides
-SESSION_SECRET=superdupersecret
+export DATABASE_URL=postgres://you:somepassword@localhost:5432/ides
+export SESSION_SECRET=superdupersecret
 
 # Note: these guys are only used to initialize the PostgreSQL database
 # container with Docker
-POSTGRES_USER=you
-POSTGRES_PASSWORD=somepassword
-POSTGRES_DB=ides
+export POSTGRES_USER=you
+export POSTGRES_PASSWORD=somepassword
+export POSTGRES_DB=ides
