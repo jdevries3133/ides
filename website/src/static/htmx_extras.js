@@ -41,10 +41,16 @@ htmx.on("htmx:beforeSwap", (e) => {
 htmx.config.defaultSwapStyle = "outerHTML";
 
 function transformBookLinks(currentArea) {
-  for (const element of document.querySelectorAll("a[href^='/book']")) {
-    const url = new URL(window.location.origin + element.getAttribute("href"));
-    url.searchParams.set("screen_area", currentArea);
-    element.setAttribute("href", url.toString());
+  for (const attribute of ["hx-get", "href"]) {
+    for (const element of document.querySelectorAll(
+      `[${attribute}^='/book']`,
+    )) {
+      const url = new URL(
+        window.location.origin + element.getAttribute(attribute),
+      );
+      url.searchParams.set("screen_area", currentArea);
+      element.setAttribute(attribute, url.toString());
+    }
   }
 }
 
