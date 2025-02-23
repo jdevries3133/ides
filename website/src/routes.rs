@@ -53,7 +53,7 @@ impl Route {
             Self::Auth => "/".into(),
             Self::Book => "/book".into(),
             Self::Favicon => "/favicon.ico".into(),
-            Self::Htmx => "/generated/htmx-2.0.2".into(),
+            Self::Htmx => "/generated/htmx-2.0.2-mod1".into(),
             Self::Ping => "/ping".into(),
             Self::RobotsTxt => "/robots.txt".into(),
             Self::StaticAppleIcon => "/static/apple_icon".into(),
@@ -95,7 +95,7 @@ pub fn get_routes() -> Router<models::AppState> {
         )
         .route(&Route::Auth.as_string(), get(auth::ui::get_handler))
         .route(&Route::Auth.as_string(), post(auth::ui::post_handler))
-        .route(&Route::Book.as_string(), get(book::view_book))
+        .route(&Route::Book.as_string(), get(book::ui))
         .route(&Route::Favicon.as_string(), get(r#static::get_favicon))
         .route(&Route::Htmx.as_string(), get(r#static::get_htmx_js))
         .route(

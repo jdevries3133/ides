@@ -1,13 +1,38 @@
 use super::access::log_access;
 use crate::{htmx, prelude::*};
 
-pub async fn book_controller(
+#[derive(Deserialize)]
+pub struct Params {
+    page: Option<i32>,
+    #[allow(dead_code)]
+    /// On the client, this is set to the product of `window.innerHeight` &
+    /// `window.innerWidth`.
+    screen_area: i32,
+}
+
+pub async fn ui(
     State(AppState { db }): State<AppState>,
     headers: HeaderMap,
+    params: Query<Params>,
 ) -> Result<impl IntoResponse> {
     match Auth::from_headers(&db, &headers).await {
         AuthResult::Authenticated(auth) => {
-            Ok(book_view(&auth, &db).await?.into_response())
+            log_access(&auth, &db, params.page.unwrap_or_default())
+                .await
+                .map_err(|e| {
+                    e.wrap(ErrT::BookUi).ctx("while accessing book UI".into())
+                })?;
+
+            Ok(Page {
+                title: "Ides of August",
+                children: &PageContainer {
+                    children: &Reader {
+                        reader_name: &auth.name,
+                    },
+                },
+            }
+            .render()
+            .into_response())
         }
         AuthResult::NotAuthenticated => {
             Ok(htmx::redirect(HeaderMap::new(), &Route::Auth.as_string())
@@ -15,25 +40,6 @@ pub async fn book_controller(
         }
         AuthResult::Err(e) => Err(e),
     }
-}
-
-async fn book_view(
-    auth: &Auth,
-    db: impl PgExecutor<'_> + Copy,
-) -> Result<impl IntoResponse> {
-    log_access(auth, db, 1)
-        .await
-        .map_err(|e| e.wrap(ErrT::BookUi))?;
-
-    Ok(Page {
-        title: "Ides of August",
-        children: &PageContainer {
-            children: &Reader {
-                reader_name: &auth.name,
-            },
-        },
-    }
-    .render())
 }
 
 struct Reader<'a> {
