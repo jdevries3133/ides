@@ -137,13 +137,9 @@ impl Component for Reader<'_> {
         format!(
             r#"
             <div class="w-full h-full">
-            <div>{content}</div>
-            <a href="{prev}">
-                <button>previous page</button>
-            </a>
-            <a href="{next}">
-                <button>next page</button>
-            </a>
+            <div class="prose dark:text-slate-100">{content}</div>
+            <button hx-get="{prev}" hx-target="body">previous page</button>
+            <button hx-get="{next}" hx-target="body">next page</button>
             <p>reading as {reader_name}</p>
             </div>
             "#
