@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "update book set title = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "116bc7ff8fdf81446a37a2c662be19037e7efcb70e2385a51a24534c925e2b0e"
+}

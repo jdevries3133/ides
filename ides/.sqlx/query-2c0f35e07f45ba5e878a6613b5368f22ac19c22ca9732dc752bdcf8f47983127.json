@@ -1,0 +1,17 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "insert into block\n                (\n                    sequence,\n                    content,\n                    book_revision_id,\n                    type_id\n                ) values ($1, $2, $3, $4)",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Text",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "2c0f35e07f45ba5e878a6613b5368f22ac19c22ca9732dc752bdcf8f47983127"
+}

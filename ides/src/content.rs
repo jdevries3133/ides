@@ -128,10 +128,21 @@ impl Book {
         self,
         db: impl PgExecutor<'_> + Copy,
     ) -> Result<PersistedBook> {
-        let Id { id: book_id } = query_as!(
+        // Note: for now, we treat the book as a singleton, and don't support
+        // multiple books. If a row in books does not exist, we'll be in a
+        // broken state.
+
+        query!("update book set title = $1", self.title)
+            .execute(db)
+            .await
+            .map_err(|e| {
+                ErrStack::new(ErrT::AdminBook)
+                    .ctx(format!("failed to update singleton book title: {e}"))
+            })?;
+
+        let Id { id: revision_id } = query_as!(
             Id,
-            "insert into book (title) values ($1) returning id",
-            self.title
+            "insert into book_revision (book_id) values (1) returning id"
         )
         .fetch_one(db)
         .await
@@ -148,12 +159,12 @@ impl Book {
                 (
                     sequence,
                     content,
-                    book_id,
+                    book_revision_id,
                     type_id
                 ) values ($1, $2, $3, $4)",
                 seq_i32,
                 block.content,
-                book_id,
+                revision_id,
                 block_type_id
             )
             .execute(db)
@@ -165,7 +176,7 @@ impl Book {
         }
 
         Ok(PersistedBook {
-            id: book_id,
+            id: revision_id,
             book: self,
         })
     }
