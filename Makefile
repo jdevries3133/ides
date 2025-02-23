@@ -72,8 +72,10 @@ ifndef CI
 endif
 
 dev: setup
-	$(ENV) cargo run --bin create-token -- --name tmp --role admin
-	echo "^^ admin user for development"
+	@echo "===="
+	@$(ENV) cargo run --quiet --bin create-token -- --name tmp --role admin
+	@echo "^^ admin user for development ^^"
+	@echo "===="
 	npx concurrently --names 'tailwind,cargo,stripe' \
 		'cd website && pnpm run dev' \
 		"cargo watch -x 'run --bin website --features live_reload'"
