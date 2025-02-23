@@ -23,10 +23,14 @@ use axum::{
 /// are provided, we'll construct the route with the `:id` template in it
 /// for the Axum router.
 pub enum Route {
+    /// Route which will return an empty string. This is mainly an HTMX utility
+    /// to allow a component to easily be swapped with nothing.
     AdminHome,
     AdminImportBook,
     Auth,
     Book,
+    BookNextPage,
+    BookPrevPage,
     Favicon,
     Htmx,
     Ping,
@@ -40,8 +44,6 @@ pub enum Route {
     StaticMediumIcon,
     StaticSmallIcon,
     StaticTinyIcon,
-    /// Route which will return an empty string. This is mainly an HTMX utility
-    /// to allow a component to easily be swapped with nothing.
     Void,
 }
 
@@ -52,6 +54,8 @@ impl Route {
             Self::AdminImportBook => "/admin/import-book".into(),
             Self::Auth => "/".into(),
             Self::Book => "/book".into(),
+            Self::BookNextPage => "/book/next-page".into(),
+            Self::BookPrevPage => "/book/prev-page".into(),
             Self::Favicon => "/favicon.ico".into(),
             Self::Htmx => "/generated/htmx-2.0.2-mod2".into(),
             Self::Ping => "/ping".into(),
@@ -96,6 +100,8 @@ pub fn get_routes() -> Router<models::AppState> {
         .route(&Route::Auth.as_string(), get(auth::ui::get_handler))
         .route(&Route::Auth.as_string(), post(auth::ui::post_handler))
         .route(&Route::Book.as_string(), get(book::ui))
+        .route(&Route::BookNextPage.as_string(), get(book::next_page))
+        .route(&Route::BookPrevPage.as_string(), get(book::prev_page))
         .route(&Route::Favicon.as_string(), get(r#static::get_favicon))
         .route(&Route::Htmx.as_string(), get(r#static::get_htmx_js))
         .route(

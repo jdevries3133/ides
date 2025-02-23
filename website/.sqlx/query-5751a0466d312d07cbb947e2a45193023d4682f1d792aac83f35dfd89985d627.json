@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select\n            id current_block_id,\n            book_revision_id,\n            sequence current_block_sequence\n        from block\n        where\n            sequence >= $1\n            and book_revision_id = (\n                select revision_id\n                from current_revision\n                where book_id = 1\n            )\n        order by sequence\n        limit 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "current_block_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "book_revision_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "current_block_sequence",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5751a0466d312d07cbb947e2a45193023d4682f1d792aac83f35dfd89985d627"
+}

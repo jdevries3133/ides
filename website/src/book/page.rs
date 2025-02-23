@@ -89,3 +89,98 @@
 //! No matter which type of page update we perform, we'll provide the readers
 //! with notifications after content updates, letting them know which type
 //! of page-mapping was performed.
+
+use super::ui::{get_current_position, render, CurrentPosition};
+use crate::{htmx, prelude::*};
+use ides::content::Direction;
+
+pub async fn next_page(
+    State(AppState { db }): State<AppState>,
+    headers: HeaderMap,
+) -> Result<Response> {
+    match Auth::from_headers(&db, &headers).await {
+        AuthResult::Authenticated(auth) => {
+            change_page(&auth, &db, Direction::Forward).await
+        }
+        AuthResult::NotAuthenticated => {
+            Ok(htmx::redirect(HeaderMap::new(), &Route::Auth.as_string())
+                .into_response())
+        }
+        AuthResult::Err(e) => Err(e),
+    }
+}
+
+pub async fn prev_page(
+    State(AppState { db }): State<AppState>,
+    headers: HeaderMap,
+) -> Result<Response> {
+    match Auth::from_headers(&db, &headers).await {
+        AuthResult::Authenticated(auth) => {
+            change_page(&auth, &db, Direction::Back).await
+        }
+        AuthResult::NotAuthenticated => {
+            Ok(htmx::redirect(HeaderMap::new(), &Route::Auth.as_string())
+                .into_response())
+        }
+        AuthResult::Err(e) => Err(e),
+    }
+}
+
+async fn change_page(
+    auth: &Auth,
+    db: impl PgExecutor<'_> + Copy,
+    direction: Direction,
+) -> Result<Response> {
+    let position = get_current_position(auth, db).await?;
+    let diff = match direction {
+        Direction::Back => -5,
+        Direction::Forward => 5,
+    };
+    let new_seq = position.current_block_sequence + diff;
+    let new_position = query_as!(
+        CurrentPosition,
+        "select
+            id current_block_id,
+            book_revision_id,
+            sequence current_block_sequence
+        from block
+        where
+            sequence >= $1
+            and book_revision_id = (
+                select revision_id
+                from current_revision
+                where book_id = 1
+            )
+        order by sequence
+        limit 1",
+        new_seq
+    )
+    .fetch_optional(db)
+    .await
+    .map_err(|e| ErrStack::sqlx(e, "change_page"))?;
+
+    match new_position {
+        None => {
+            // no more pages left in that direction
+            Ok("done".into_response())
+        }
+        Some(new_position) => {
+            query!(
+                "insert into current_block (token_id, block_id)
+        values ($1, $2)
+        on conflict (token_id)
+        do update set
+            block_id = $2",
+                auth.token_id,
+                new_position.current_block_id
+            )
+            .execute(db)
+            .await
+            .map_err(|e| {
+                ErrStack::sqlx(e, "change_page; saving new position")
+            })?;
+
+            render(auth, db, &new_position).await
+        }
+    }
+}

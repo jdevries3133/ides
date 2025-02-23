@@ -1,0 +1,34 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select\n            bl.id current_block_id,\n            bl.book_revision_id,\n            bl.sequence current_block_sequence\n        from current_block cb\n        join block bl on cb.block_id = bl.id\n        where\n            token_id = $1\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "current_block_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "book_revision_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "current_block_sequence",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c7264091bf774f3d26d896f923898449f483f651d0965ec26c3963be1da7ee11"
+}

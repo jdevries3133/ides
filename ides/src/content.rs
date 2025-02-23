@@ -6,6 +6,11 @@ pub struct Block {
     pub content: String,
 }
 
+pub struct SequencedBlock {
+    pub block: Block,
+    pub sequence: i32,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BlockType {
     Paragraph,
@@ -34,6 +39,60 @@ impl TryInto<BlockType> for i32 {
                 .ctx(format!("{self} is not a valid i32 for BlockType"))),
         }
     }
+}
+
+pub enum Direction {
+    Back,
+    Forward,
+}
+
+/// Return 200 blocks adjacent to current_block_id (100 before & 100 after)
+/// in sequence order.
+pub async fn list_blocks(
+    db: impl PgExecutor<'_> + Copy,
+    current_sequence: i32,
+    book_revision_id: i32,
+) -> Result<Vec<SequencedBlock>> {
+    struct Qres {
+        content: String,
+        type_id: i32,
+        sequence: i32,
+    }
+    let mut result = query_as!(
+        Qres,
+        "select sequence, content, type_id
+        from block
+        where
+            sequence > $1
+            and sequence < $2
+            and book_revision_id = $3
+        order by sequence
+        limit 200",
+        current_sequence - 100,
+        current_sequence + 100,
+        book_revision_id
+    )
+    .fetch_all(db)
+    .await
+    .map_err(|e| {
+        ErrStack::new(ErrT::SqlxError)
+            .ctx(format!("could not list_blocks: {e}"))
+    })?;
+
+    let mut x = result.drain(..);
+    x.try_fold(Vec::new(), |mut acc, row| {
+        acc.push(SequencedBlock {
+            sequence: row.sequence,
+            block: Block {
+                r#type: row.type_id.try_into().map_err(|e: ErrStack| {
+                    e.wrap(ErrT::BookUi)
+                        .ctx("happened during list_blocks".into())
+                })?,
+                content: row.content,
+            },
+        });
+        Ok(acc)
+    })
 }
 
 #[derive(Debug)]

@@ -1,0 +1,36 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select sequence, content, type_id\n        from block\n        where\n            sequence > $1\n            and sequence < $2\n            and book_revision_id = $3\n        order by sequence\n        limit 200",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "sequence",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "content",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "type_id",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "5063fe470e9b2ceb6c76183deab53f2c9d57e293e34f66bf3c2297225dfce0a4"
+}

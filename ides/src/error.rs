@@ -49,6 +49,9 @@ impl ErrStack {
         };
         Self { stack: vec![frame] }
     }
+    pub fn sqlx(e: sqlx::Error, ctx: &str) -> Self {
+        Self::new(ErrT::SqlxError).ctx(format!("{ctx}: {e}"))
+    }
     pub fn wrap(mut self, err: ErrT) -> Self {
         self.stack.push(ErrFrame {
             variant: err,
