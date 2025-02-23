@@ -77,7 +77,8 @@
 //! we find the nearest **canonical checksum.** The count of blocks we've
 //! traversed is our offset. We add the positive or negative offset to the
 //! sequence number of the matching block in revision B. If a block in revision
-//! B with the matching sequence exists, we return it.
+//! B with the matching sequence exists, we return it. If we've looked more
+//! than 30 blocks in both directions, give up.
 //!
 //! ### "Rough Match"
 //!
