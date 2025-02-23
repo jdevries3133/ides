@@ -49,7 +49,7 @@ struct Reader<'a> {
 }
 impl Component for Reader<'_> {
     fn render(&self) -> String {
-        let reader_name = self.reader_name;
+        let reader_name = clean(self.reader_name);
         format!(
             r#"
             <div class="w-full h-full">
