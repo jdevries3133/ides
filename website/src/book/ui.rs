@@ -1,3 +1,5 @@
+//! Reader UI
+
 use super::access::log_access;
 use crate::{htmx, prelude::*};
 

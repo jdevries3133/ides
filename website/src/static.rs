@@ -1,3 +1,5 @@
+//! Serve static assets.
+
 use crate::htmx;
 use axum::{
     http::{HeaderMap, HeaderValue},
@@ -37,7 +39,7 @@ pub async fn pong() -> impl IntoResponse {
 /// first user interaction.
 ///
 /// Additionally, our HTMX version does not change very often. We can exploit
-/// browser cachine to mostly never need to serve this resource, making the
+/// browser caching to mostly never need to serve this resource, making the
 /// app more responsive and cutting down on overall bandwidth. That's also why
 /// we have the HTMX version in the URL path -- because we need to bust the
 /// browser cache every time we upgrade.

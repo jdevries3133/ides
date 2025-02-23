@@ -1,3 +1,5 @@
+//! Admin UI for importing and updating the book, etc.
+
 mod home;
 mod import;
 mod nav;

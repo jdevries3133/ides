@@ -1,3 +1,5 @@
+//! Access logging
+
 use crate::{auth::Auth, prelude::*};
 
 pub async fn log_access(

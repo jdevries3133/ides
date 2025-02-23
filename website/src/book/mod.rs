@@ -1,3 +1,5 @@
+//! The book!
+
 mod access;
 mod page;
 mod ui;

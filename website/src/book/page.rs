@@ -1,6 +1,8 @@
-//! Pagination through the block-based book content. One important goal for
-//! pagination is to keep the reader's state consistent while the book is
-//! revised, allowing the author to publish updates continuously.
+//! Pagination through the block-based book content.
+//!
+//! One important goal for pagination is to keep the reader's state consistent
+//! while the book is revised, allowing the author to publish updates
+//! continuously.
 //!
 //! We have a few pieces of information which contribute to knowing where the
 //! reader is in the book;
@@ -54,5 +56,3 @@
 //!
 //! The reader's current page is a pointer to a block. So, the goal is to move
 //! their pointer to the best block in the new revision.
-//!
-//! [wip]
