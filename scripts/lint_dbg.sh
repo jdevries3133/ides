@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ ! -z "$(grep -rnc 'dbg!' src | grep -v ':0$')" ]
+if [ ! -z "$(git ls-files | grep '\.rs$' | xargs -I{} grep 'dbg!' {})" ]
 then
     echo "Fatal: found lingering dbg! statements!"
     exit 1

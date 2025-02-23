@@ -273,7 +273,6 @@ more good content
             "This\n\nis\n\n\njust\n\nsome\n\n\ncontent.\n\n",
         );
 
-        dbg!(&book);
         assert_eq!(book.blocks.len(), 5);
         assert_eq!(book.blocks[0].content, "This");
         assert_eq!(book.blocks[1].content, "is");
