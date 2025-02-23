@@ -125,7 +125,7 @@ impl Component for Reader<'_> {
         let content = self
             .blocks
             .iter()
-            .filter(|b| b.sequence > self.position.current_block_sequence)
+            .filter(|b| b.sequence >= self.position.current_block_sequence)
             .take(5)
             .fold(String::new(), |mut acc, block| {
                 acc.push_str(&format!(
