@@ -50,9 +50,42 @@
 //! the live version of the same book from one revision to another. At update
 //! time, we will find the set of checksums with a 1:1 mapping between
 //! revisions. In other words, a checksum which exists exactly once in both
-//! versions can be used to map positions in-between versions.
+//! versions can be used to map positions in-between versions. We will call
+//! these **canonical checksums.**
 //!
 //! ## Page Update Algorithm
 //!
 //! The reader's current page is a pointer to a block. So, the goal is to move
-//! their pointer to the best block in the new revision.
+//! their pointer to the best block in the new revision. Moving a reader's
+//! page pointer from a block of revision A to a block of revision B
+//! effectively toggles them from reading revision A to reading revision B,
+//! because the "next page" and "previous page" functions will then traverse
+//! through revision B instead of revision A.
+//!
+//! So, given revision A, revision B, and a block pointer in revision A, how
+//! do we find the best block pointer in revision B?
+//!
+//! ### "Perfect Match"
+//!
+//! First, we check whether the current block checksum is a **canonical
+//! checksum.** If so, return the corresponding block with the same checksum in
+//! revision B.
+//!
+//! ### "Close Match"
+//!
+//! Next, we iterate backwards and forwards through blocks in revision A until
+//! we find the nearest **canonical checksum.** The count of blocks we've
+//! traversed is our offset. We add the positive or negative offset to the
+//! sequence number of the matching block in revision B. If a block in revision
+//! B with the matching sequence exists, we return it.
+//!
+//! ### "Rough Match"
+//!
+//! Otherwise, we simply calculate the % of progress through the whole book,
+//! and grab a block from revision B at the same position.
+//!
+//! # Content Update Notification
+//!
+//! No matter which type of page update we perform, we'll provide the readers
+//! with notifications after content updates, letting them know which type
+//! of page-mapping was performed.
