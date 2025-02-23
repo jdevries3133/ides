@@ -40,18 +40,48 @@ htmx.on("htmx:beforeSwap", (e) => {
 
 htmx.config.defaultSwapStyle = "outerHTML";
 
-/**
- * Book links need to include the screen size, which is accompished by this
- * client-side script
- */
-function addScreenAreaToBookLinks() {
-  const screenArea = window.innerWidth * window.innerHeight;
+function transformBookLinks(currentArea) {
   for (const element of document.querySelectorAll("a[href^='/book']")) {
     const url = new URL(window.location.origin + element.getAttribute("href"));
-    url.searchParams.set("screen_area", screenArea);
+    url.searchParams.set("screen_area", currentArea);
     element.setAttribute("href", url.toString());
   }
 }
 
-htmx.on("htmx:afterSwap", addScreenAreaToBookLinks);
-window.addEventListener("DOMContentLoaded", addScreenAreaToBookLinks);
+function navigateOnScreenSizeChange(currentArea) {
+  const params = new URLSearchParams(window.location.search);
+  const paramArea = parseInt(params.get("screen_area"));
+  if (
+    window.location.pathname == "/book" &&
+    (isNaN(paramArea) || paramArea !== currentArea)
+  ) {
+    params.set("screen_area", currentArea);
+    window.location.search = params.toString();
+  }
+}
+
+/**
+ * Book links need to include the screen size, which is accompished by this
+ * client-side script
+ */
+function setScreenSize() {
+  const currentArea = window.innerWidth * window.innerHeight;
+
+  // Do this first because if we navigate, then we'll never run the second
+  // function anyway.
+  navigateOnScreenSizeChange(currentArea);
+  transformBookLinks(currentArea);
+}
+
+htmx.on("htmx:afterSwap", setScreenSize);
+window.addEventListener("DOMContentLoaded", setScreenSize);
+
+let debounce;
+window.addEventListener("resize", () => {
+  let later = () => {
+    debounce = null;
+    setScreenSize();
+  };
+  clearTimeout(debounce);
+  debounce = setTimeout(later, 200);
+});

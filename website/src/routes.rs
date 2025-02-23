@@ -53,7 +53,7 @@ impl Route {
             Self::Auth => "/".into(),
             Self::Book => "/book".into(),
             Self::Favicon => "/favicon.ico".into(),
-            Self::Htmx => "/generated/htmx-2.0.2-mod1".into(),
+            Self::Htmx => "/generated/htmx-2.0.2-mod2".into(),
             Self::Ping => "/ping".into(),
             Self::RobotsTxt => "/robots.txt".into(),
             Self::StaticAppleIcon => "/static/apple_icon".into(),
