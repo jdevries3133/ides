@@ -5,22 +5,21 @@ use crate::{htmx, prelude::*};
 use ides::content::SequencedBlock;
 
 #[derive(Deserialize)]
-pub struct Params {
-    #[allow(dead_code)]
+pub struct ScreenAreaParams {
     /// On the client, this is set to the product of `window.innerHeight` &
     /// `window.innerWidth`.
-    screen_area: i32,
+    pub screen_area: i32,
 }
 
 pub async fn ui(
     State(AppState { db }): State<AppState>,
     headers: HeaderMap,
-    _params: Query<Params>,
+    Query(params): Query<ScreenAreaParams>,
 ) -> Result<impl IntoResponse> {
     match Auth::from_headers(&db, &headers).await {
         AuthResult::Authenticated(auth) => {
             let position = get_current_position(&auth, &db).await?;
-            render(&auth, &db, &position).await
+            render(&auth, &db, &position, &params).await
         }
         AuthResult::NotAuthenticated => {
             Ok(htmx::redirect(HeaderMap::new(), &Route::Auth.as_string())
@@ -34,6 +33,7 @@ pub async fn render(
     auth: &Auth,
     db: impl PgExecutor<'_> + Copy,
     position: &CurrentPosition,
+    screen_area: &ScreenAreaParams,
 ) -> Result<Response> {
     log_access(auth, db, position.current_block_sequence)
         .await
@@ -55,6 +55,7 @@ pub async fn render(
                 reader_name: &auth.name,
                 blocks: &blocks,
                 position,
+                screen_area,
             },
         },
     }
@@ -116,22 +117,57 @@ struct Reader<'a> {
     reader_name: &'a str,
     blocks: &'a [SequencedBlock],
     position: &'a CurrentPosition,
+    screen_area: &'a ScreenAreaParams,
 }
 impl Component for Reader<'_> {
     fn render(&self) -> String {
         let next = Route::BookNextPage;
         let prev = Route::BookPrevPage;
         let reader_name = clean(self.reader_name);
+
+        // Screen area and the amount of characters that look good should
+        // scale linearly. Here are two samples that looked good, and then
+        // we'll compute the character limit for any other screen area from
+        // these;
+        //
+        // - 717808 1928
+        // - 200552 744
+        let slope = (1928.0 - 744.0) / (717808.0 - 200552.0);
+        let constant = 1928.0 - slope * 717808.0;
+        let char_limit = (slope * f64::from(self.screen_area.screen_area)
+            + constant) as usize;
+
+        let mut chars_taken = 0;
         let content = self
             .blocks
             .iter()
             .filter(|b| b.sequence >= self.position.current_block_sequence)
-            .take(5)
-            .fold(String::new(), |mut acc, block| {
-                acc.push_str(&format!(
-                    "<p>{}</p>",
-                    clean(&block.block.content)
-                ));
+            .enumerate()
+            .take_while(|(i, block)| {
+                chars_taken += block.block.content.len();
+                chars_taken < char_limit || *i == 0
+            })
+            .fold(String::new(), |mut acc, (_, block)| {
+                match block.block.r#type {
+                    ides::content::BlockType::SectionTitle => {
+                        acc.push_str(&format!(
+                            "<h1>{}</h1>",
+                            clean(&block.block.content)
+                        ));
+                    }
+                    ides::content::BlockType::H1 => {
+                        acc.push_str(&format!(
+                            "<h2>{}</h2>",
+                            clean(&block.block.content)
+                        ));
+                    }
+                    ides::content::BlockType::Paragraph => {
+                        acc.push_str(&format!(
+                            "<p>{}</p>",
+                            clean(&block.block.content)
+                        ));
+                    }
+                }
                 acc
             });
         format!(

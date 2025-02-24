@@ -111,7 +111,7 @@ impl Component for Footer {
             r#"
             <footer class="flex flex-wrap items-center justify-center gap-2 p-4">
                 <a class="link" href="{auth}">Configure Token</a>
-                <a hx-boost="false" class="link" href="{book}">Read Ides of August</a>
+                <a class="link" href="{book}">Read Ides of August</a>
             </footer>
             "#
         )

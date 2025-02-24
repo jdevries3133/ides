@@ -57,7 +57,7 @@ impl Route {
             Self::BookNextPage => "/book/next-page".into(),
             Self::BookPrevPage => "/book/prev-page".into(),
             Self::Favicon => "/favicon.ico".into(),
-            Self::Htmx => "/generated/htmx-2.0.2-mod2".into(),
+            Self::Htmx => "/generated/htmx-2.0.2-mod3".into(),
             Self::Ping => "/ping".into(),
             Self::RobotsTxt => "/robots.txt".into(),
             Self::StaticAppleIcon => "/static/apple_icon".into(),

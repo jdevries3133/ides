@@ -50,6 +50,7 @@ function transformBookLinks(currentArea) {
       );
       url.searchParams.set("screen_area", currentArea);
       element.setAttribute(attribute, url.toString());
+      htmx.process(element);
     }
   }
 }
