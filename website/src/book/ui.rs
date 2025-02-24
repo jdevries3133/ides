@@ -50,13 +50,11 @@ pub async fn render(
 
     Ok(Page {
         title: "Ides of August",
-        children: &PageContainer {
-            children: &Reader {
-                reader_name: &auth.name,
-                blocks: &blocks,
-                position,
-                screen_area,
-            },
+        children: &Reader {
+            reader_name: &auth.name,
+            blocks: &blocks,
+            position,
+            screen_area,
         },
     }
     .render()
@@ -121,8 +119,6 @@ struct Reader<'a> {
 }
 impl Component for Reader<'_> {
     fn render(&self) -> String {
-        let next = Route::BookNextPage;
-        let prev = Route::BookPrevPage;
         let reader_name = clean(self.reader_name);
 
         // Screen area and the amount of characters that look good should
@@ -170,15 +166,71 @@ impl Component for Reader<'_> {
                 }
                 acc
             });
+        let toolbar = Toolbar {}.render();
         format!(
             r#"
-            <div class="w-full h-full">
-            <div class="prose dark:text-slate-100">{content}</div>
-            <button hx-get="{prev}" hx-target="body">previous page</button>
-            <button hx-get="{next}" hx-target="body">next page</button>
-            <p>reading as {reader_name}</p>
+            <div
+                id="reader-container"
+                class="bg-teal-50
+                dark:bg-indigo-1000 dark:text-slate-200 min-h-[100vh]"
+            >
+                <div class="p-2 sm:p-4 md:p-8 prose dark:text-slate-200">{content}</div>
+                <div class="fixed bottom-0 w-screen">
+                <p class="bg-gray-500">reading as {reader_name}</p>
+                {toolbar}
+                </div>
             </div>
             "#
         )
+    }
+}
+
+struct Toolbar;
+impl Component for Toolbar {
+    fn render(&self) -> String {
+        let next = Route::BookNextPage;
+        let prev = Route::BookPrevPage;
+        let forward = ForwardIcon {}.render();
+        let back = BackIcon {}.render();
+        format!(
+            r##"
+            <div class="flex">
+            <button
+                hx-target="#reader-container"
+                hx-get="{prev}"
+                class="bg-gray-500 flex flex-grow p-1 justify-center items-center
+                border-2 border-black"
+            >{back}</button>
+            <button
+                class="bg-gray-500 flex flex-grow p-1 justify-center items-center
+                border-2 border-black"
+                hx-target="#reader-container"
+                hx-get="{next}"
+            >{forward}</button>
+            </div>
+            "##
+        )
+    }
+}
+
+struct ForwardIcon;
+impl Component for ForwardIcon {
+    fn render(&self) -> String {
+        r#"
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+            <path d="M2.53 3.956A1 1 0 0 0 1 4.804v6.392a1 1 0 0 0 1.53.848l5.113-3.196c.16-.1.279-.233.357-.383v2.73a1 1 0 0 0 1.53.849l5.113-3.196a1 1 0 0 0 0-1.696L9.53 3.956A1 1 0 0 0 8 4.804v2.731a.992.992 0 0 0-.357-.383L2.53 3.956Z" />
+        </svg>
+        "#.into()
+    }
+}
+
+struct BackIcon;
+impl Component for BackIcon {
+    fn render(&self) -> String {
+        r#"
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
+            <path d="M8.5 4.75a.75.75 0 0 0-1.107-.66l-6 3.25a.75.75 0 0 0 0 1.32l6 3.25a.75.75 0 0 0 1.107-.66V8.988l5.393 2.921A.75.75 0 0 0 15 11.25v-6.5a.75.75 0 0 0-1.107-.66L8.5 7.013V4.75Z" />
+        </svg>
+        "#.into()
     }
 }
