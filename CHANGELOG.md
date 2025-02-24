@@ -1,6 +1,8 @@
 # TODO
 
-- [ ] implement content update
+- [ ] about page
+- [ ] better UI for arrows
+- [ ] ability to leave comments (click on block => pop-up => leave a comment)
 
 # Done
 
