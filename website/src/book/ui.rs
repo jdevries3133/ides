@@ -119,6 +119,7 @@ struct Reader<'a> {
 }
 impl Component for Reader<'_> {
     fn render(&self) -> String {
+        let about = Route::About;
         let reader_name = clean(self.reader_name);
 
         // Screen area and the amount of characters that look good should
@@ -176,8 +177,11 @@ impl Component for Reader<'_> {
             >
                 <div class="p-2 sm:p-4 md:p-8 prose dark:text-slate-200">{content}</div>
                 <div class="fixed bottom-0 w-screen">
-                <p class="bg-gray-500">reading as {reader_name}</p>
-                {toolbar}
+                    <div class="flex bg-gray-500 px-2">
+                        <p>reading as {reader_name}</p>
+                        <a class="link flex-grow text-right" href="{about}">about the site</a>
+                    </div>
+                    {toolbar}
                 </div>
             </div>
             "#

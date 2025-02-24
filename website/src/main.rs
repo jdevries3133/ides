@@ -4,6 +4,7 @@ use dotenvy::dotenv;
 use ides::prelude::*;
 use std::net::SocketAddr;
 
+mod about;
 mod admin;
 mod auth;
 mod book;

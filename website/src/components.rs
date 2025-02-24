@@ -107,11 +107,13 @@ impl Component for Footer {
     fn render(&self) -> String {
         let auth = Route::Auth;
         let book = Route::Book;
+        let about = Route::About;
         format!(
             r#"
             <footer class="flex flex-wrap items-center justify-center gap-2 p-4">
                 <a class="link" href="{auth}">Configure Token</a>
                 <a class="link" href="{book}">Read Ides of August</a>
+                <a class="link" href="{about}">About Ides of August</a>
             </footer>
             "#
         )

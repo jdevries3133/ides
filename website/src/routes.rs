@@ -1,6 +1,6 @@
 //! All possible routes with their params are defined in a big enum.
 
-use super::{admin, auth, book, middleware, models, r#static};
+use super::{about, admin, auth, book, middleware, models, r#static};
 use axum::{
     middleware::from_fn,
     routing::{get, post, Router},
@@ -29,6 +29,7 @@ pub enum Route {
     AdminImportBook,
     AdminChangeRevision,
     Auth,
+    About,
     Book,
     BookNextPage,
     BookPrevPage,
@@ -55,6 +56,7 @@ impl Route {
             Self::AdminImportBook => "/admin/import-book".into(),
             Self::AdminChangeRevision => "/admin/change-revision".into(),
             Self::Auth => "/".into(),
+            Self::About => "/about".into(),
             Self::Book => "/book".into(),
             Self::BookNextPage => "/book/next-page".into(),
             Self::BookPrevPage => "/book/prev-page".into(),
@@ -90,6 +92,7 @@ impl std::fmt::Display for Route {
 
 pub fn get_routes() -> Router<models::AppState> {
     Router::new()
+        .route(&Route::About.as_string(), get(about::about))
         .route(&Route::AdminHome.as_string(), get(admin::home))
         .route(
             &Route::AdminImportBook.as_string(),
