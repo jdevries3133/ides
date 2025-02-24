@@ -21,9 +21,13 @@ struct Home;
 impl Component for Home {
     fn render(&self) -> String {
         let import = Route::AdminImportBook;
+        let change_rev = Route::AdminChangeRevision;
         format!(
             r#"
-            <a href="{import}">Import Book</a>
+            <div class="flex flex-col">
+                <a class="link" href="{import}">Import Book</a>
+                <a class="link" href="{change_rev}">Change Current Revision</a>
+            </div>
             "#
         )
     }

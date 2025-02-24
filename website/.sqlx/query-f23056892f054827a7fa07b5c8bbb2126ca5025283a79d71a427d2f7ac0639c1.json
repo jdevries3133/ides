@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "insert into current_revision\n                (\n                    revision_id,\n                    book_id\n                ) values ($1, $2)\n                on conflict (book_id)\n                do update set\n                    revision_id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "f23056892f054827a7fa07b5c8bbb2126ca5025283a79d71a427d2f7ac0639c1"
+}

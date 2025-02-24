@@ -23,14 +23,18 @@ pub async fn import_book_ui(
 struct ImportBook;
 impl Component for ImportBook {
     fn render(&self) -> String {
+        let admin = Route::AdminHome;
         let handler = Route::AdminImportBook;
         format!(
             r#"
-            <form class="flex flex-col gap-2" hx-post="{handler}">
-                <label for="content">Content</label>
-                <textarea id="content" name="content"></textarea>
-                <button>save</button>
-            </form>
+            <div>
+                <a class="link" href="{admin}">admin home</a>
+                <form class="flex flex-col gap-2" hx-post="{handler}" hx-target="closest div">
+                    <label for="content">Content</label>
+                    <textarea id="content" name="content"></textarea>
+                    <button>save</button>
+                </form>
+            </div>
             "#
         )
     }
@@ -50,7 +54,18 @@ pub async fn handle_import_book(
         AdminNav::IsAdmin => {
             let book = Book::from_raw_plain_text(&content);
             let book = book.persist(&db).await?;
-            Ok(format!("OK; id = {}", book.id).into_response())
+            Ok([
+                Saved {
+                    message: &format!(
+                        "Book imported (revision id = {})",
+                        book.revision_id
+                    ),
+                }
+                .render(),
+                ImportBook {}.render(),
+            ]
+            .join("")
+            .into_response())
         }
         AdminNav::GetOuttaHere(response) => Ok(response),
         AdminNav::Err(e) => Err(e),

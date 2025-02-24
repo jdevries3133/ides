@@ -27,6 +27,7 @@ pub enum Route {
     /// to allow a component to easily be swapped with nothing.
     AdminHome,
     AdminImportBook,
+    AdminChangeRevision,
     Auth,
     Book,
     BookNextPage,
@@ -52,6 +53,7 @@ impl Route {
         match self {
             Self::AdminHome => "/admin".into(),
             Self::AdminImportBook => "/admin/import-book".into(),
+            Self::AdminChangeRevision => "/admin/change-revision".into(),
             Self::Auth => "/".into(),
             Self::Book => "/book".into(),
             Self::BookNextPage => "/book/next-page".into(),
@@ -96,6 +98,14 @@ pub fn get_routes() -> Router<models::AppState> {
         .route(
             &Route::AdminImportBook.as_string(),
             post(admin::handle_import_book),
+        )
+        .route(
+            &Route::AdminChangeRevision.as_string(),
+            get(admin::change_revision),
+        )
+        .route(
+            &Route::AdminChangeRevision.as_string(),
+            post(admin::handle_revision_change),
         )
         .route(&Route::Auth.as_string(), get(auth::ui::get_handler))
         .route(&Route::Auth.as_string(), post(auth::ui::post_handler))

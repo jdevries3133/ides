@@ -102,7 +102,7 @@ pub struct Book {
 }
 
 pub struct PersistedBook {
-    pub id: i32,
+    pub revision_id: i32,
     pub book: Book,
 }
 
@@ -235,7 +235,7 @@ impl Book {
         }
 
         Ok(PersistedBook {
-            id: revision_id,
+            revision_id,
             book: self,
         })
     }

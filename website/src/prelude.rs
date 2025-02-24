@@ -2,7 +2,7 @@
 
 pub use crate::{
     auth::{Auth, AuthResult},
-    components::{Component, Page, PageContainer},
+    components::{Component, Page, PageContainer, Saved},
     models::AppState,
     routes::Route,
 };

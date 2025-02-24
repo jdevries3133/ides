@@ -1,0 +1,26 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select revision_id id, created_at from current_revision\n                join book_revision on id = revision_id\n                where current_revision.book_id = 1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "c7a3b2fae007dabf949a51bcf95d3db02462af545efdcecc7dc032f8973cf98a"
+}
