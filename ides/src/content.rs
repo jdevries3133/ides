@@ -67,7 +67,7 @@ pub async fn list_blocks(
         "select id, sequence, content, type_id
         from block
         where
-            sequence > $1
+            sequence >= $1
             and sequence <= $2
             and book_revision_id = $3
         order by sequence
