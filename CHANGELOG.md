@@ -1,9 +1,9 @@
 # TODO
 
-- [ ] ability to leave comments (click on block => pop-up => leave a comment)
 
 # Done
 
+- [x] ability to leave comments (click on block => pop-up => leave a comment)
 - [x] light mode colors
 - [x] styling
 - [x] make toolbar not position fixed because it's hacky and sometimes hides
