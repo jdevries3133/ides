@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "select id, sequence, content, type_id\n        from block\n        where\n            sequence > $1\n            and sequence <= $2\n            and book_revision_id = $3\n        order by sequence\n        limit $4",
+  "query": "select id, sequence, content, type_id\n        from block\n        where\n            sequence >= $1\n            and sequence <= $2\n            and book_revision_id = $3\n        order by sequence\n        limit $4",
   "describe": {
     "columns": [
       {
@@ -39,5 +39,5 @@
       false
     ]
   },
-  "hash": "29266b66bd717425303af089c6d92d210feaf78d83ed982220dbe3df9e4905bd"
+  "hash": "40d64957c7162a82a5a2582bfa98d52ea8cfdd46af7c6c82f1fff6264760bebd"
 }
