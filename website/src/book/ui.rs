@@ -172,14 +172,23 @@ impl Component for Reader<'_> {
             r#"
             <div
                 id="reader-container"
-                class="bg-teal-50
-                dark:bg-stone-900 dark:text-slate-200 min-h-[100vh]"
+                class="bg-teal-50 flex flex-col dark:bg-stone-900
+                dark:text-slate-200 h-screen w-screen overflow-clip"
             >
-                <div class="p-2 sm:p-4 md:p-8 prose dark:text-slate-200">{content}</div>
-                <div class="fixed bottom-0 w-screen">
+                <div class="w-screen flex-grow p-2 overflow-y-scroll">
+                    <div class="prose sm:p-4 md:p-8 dark:text-slate-200">
+                        {content}
+                    </div>
+                </div>
+                <div>
                     <div class="rounded-t flex bg-stone-700 px-2">
                         <p>reading as {reader_name}</p>
-                        <a class="link flex-grow text-right" href="{about}">about the site</a>
+                        <a
+                            class="link text-yellow-300 visited:text-yellow-400
+                            flex-grow text-right" href="{about}"
+                        >
+                            about the site
+                        </a>
                     </div>
                     {toolbar}
                 </div>
