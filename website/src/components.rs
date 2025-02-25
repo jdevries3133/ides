@@ -112,8 +112,12 @@ impl Component for Footer {
             r#"
             <footer class="flex flex-wrap items-center justify-center gap-2 p-4">
                 <a class="link" href="{auth}">Configure Token</a>
-                <a class="link" href="{book}">Read Ides of August</a>
-                <a class="link" href="{about}">About Ides of August</a>
+                <a class="link" href="{book}">
+                    Read <span class="italic">The Ides of August</span>
+                </a>
+                <a class="link" href="{about}">
+                    About <span class="italic">The Ides of August</span>
+                </a>
             </footer>
             "#
         )
@@ -130,7 +134,7 @@ impl Component for PageContainer<'_> {
         format!(
             r#"
             <div
-                class="p-2 sm:p-4 md:p-8 bg-teal-50 dark:bg-indigo-1000
+                class="p-2 sm:p-4 md:p-8 bg-teal-50 dark:bg-stone-900
                 dark:text-slate-200 min-h-[100vh]"
             >
                 {children}

@@ -15,11 +15,11 @@ struct About;
 impl Component for About {
     fn render(&self) -> String {
         r#"
-        <div class="prose text-slate-100">
-            <h1>About the Site</h1>
+        <div class="prose dark:text-slate-100">
+            <h1 class="dark:text-slate-200">About the Site</h1>
             <p>
                 This is a site for my friends and family to beta-read
-                Ides of August!
+                <span class="italic">The Ides of August</span>!
             </p>
             <p>
                 The purpose of this site is to keep my manuscript safe, and to
@@ -44,7 +44,9 @@ impl Component for About {
                 to <a class="link" href="mailto:jdevries3133@gmail.com">
                 jdevries3133@gmail.com</a>.
             </p>
-            <h1>About Ides of August</h1>
+            <h1 class="dark:text-slate-200">
+                About <span class="italic">The Ides of August</span>
+            </h1>
             <p>
                 After he officially came to power in 27 BCE, in the aftermath
                 of the civil wars that tore Rome apart, Emperor Augustus set
@@ -92,15 +94,15 @@ impl Component for About {
 
             <p>
 
-                My first novel, The Ides of August, is structured as if it is
-                Augustus’ lost memoir itself, and as such, aims to show the
-                valiant, the terrifying, the hideous, all with the
-                embellishment and flare that fiction lends to stories like this
-                one. In my writing, I also realized the breadth and size of the
-                story I was aiming to tell, so while this 80,000-word
-                historical fiction novel could very well stand on its own, I am
-                currently envisioning it as a duology, with a sequel in
-                progress.
+                My first novel, The <span class="italic">Ides of August</span>,
+                is structured as if it is Augustus’ lost memoir itself, and as
+                such, aims to show the valiant, the terrifying, the
+                hideous, all with the embellishment and flare that fiction
+                lends to stories like this one. In my writing, I also
+                realized the breadth and size of the story I was aiming to
+                tell, so while this 80,000-word historical fiction novel
+                could very well stand on its own, I am currently
+                envisioning it as a duology, with a sequel in progress.
 
             </p>
         </div>

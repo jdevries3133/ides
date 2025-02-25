@@ -49,7 +49,7 @@ pub async fn render(
     .await?;
 
     Ok(Page {
-        title: "Ides of August",
+        title: "The Ides of August",
         children: &Reader {
             reader_name: &auth.name,
             blocks: &blocks,
@@ -148,13 +148,13 @@ impl Component for Reader<'_> {
                 match block.block.r#type {
                     ides::content::BlockType::SectionTitle => {
                         acc.push_str(&format!(
-                            "<h1>{}</h1>",
+                            r#"<h1 class="text-yellow-400">{}</h1>"#,
                             clean(&block.block.content)
                         ));
                     }
                     ides::content::BlockType::H1 => {
                         acc.push_str(&format!(
-                            "<h2>{}</h2>",
+                            r#"<h2 class="extra-bold text-yellow-400">{}</h2>"#,
                             clean(&block.block.content)
                         ));
                     }
@@ -173,11 +173,11 @@ impl Component for Reader<'_> {
             <div
                 id="reader-container"
                 class="bg-teal-50
-                dark:bg-indigo-1000 dark:text-slate-200 min-h-[100vh]"
+                dark:bg-stone-900 dark:text-slate-200 min-h-[100vh]"
             >
                 <div class="p-2 sm:p-4 md:p-8 prose dark:text-slate-200">{content}</div>
                 <div class="fixed bottom-0 w-screen">
-                    <div class="flex bg-gray-500 px-2">
+                    <div class="rounded-t flex bg-stone-700 px-2">
                         <p>reading as {reader_name}</p>
                         <a class="link flex-grow text-right" href="{about}">about the site</a>
                     </div>
@@ -202,12 +202,12 @@ impl Component for Toolbar {
             <button
                 hx-target="#reader-container"
                 hx-get="{prev}"
-                class="bg-gray-500 flex flex-grow p-1 justify-center items-center
-                border-2 border-black"
+                class="bg-stone-700 flex flex-grow p-1 justify-center items-center
+                border-stone-400 border-t-2"
             >{back}</button>
             <button
-                class="bg-gray-500 flex flex-grow p-1 justify-center items-center
-                border-2 border-black"
+                class="bg-stone-700 flex flex-grow p-1 justify-center items-center
+                border-stone-400 border-t-2"
                 hx-target="#reader-container"
                 hx-get="{next}"
             >{forward}</button>
