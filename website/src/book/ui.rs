@@ -101,6 +101,28 @@ pub async fn get_current_position(
     }
 }
 
+impl Component for SequencedBlock {
+    fn render(&self) -> String {
+        match self.block.r#type {
+            ides::content::BlockType::SectionTitle => {
+                format!(
+                    r#"<h1 class="text-yellow-400">{}</h1>"#,
+                    clean(&self.block.content)
+                )
+            }
+            ides::content::BlockType::H1 => {
+                format!(
+                    r#"<h2 class="extra-bold text-yellow-400">{}</h2>"#,
+                    clean(&self.block.content)
+                )
+            }
+            ides::content::BlockType::Paragraph => {
+                format!("<p>{}</p>", clean(&self.block.content))
+            }
+        }
+    }
+}
+
 struct Reader<'a> {
     reader_name: &'a str,
     blocks: &'a [SequencedBlock],
@@ -112,26 +134,7 @@ impl Component for Reader<'_> {
 
         let content =
             self.blocks.iter().fold(String::new(), |mut acc, block| {
-                match block.block.r#type {
-                    ides::content::BlockType::SectionTitle => {
-                        acc.push_str(&format!(
-                            r#"<h1 class="text-yellow-400">{}</h1>"#,
-                            clean(&block.block.content)
-                        ));
-                    }
-                    ides::content::BlockType::H1 => {
-                        acc.push_str(&format!(
-                            r#"<h2 class="extra-bold text-yellow-400">{}</h2>"#,
-                            clean(&block.block.content)
-                        ));
-                    }
-                    ides::content::BlockType::Paragraph => {
-                        acc.push_str(&format!(
-                            "<p>{}</p>",
-                            clean(&block.block.content)
-                        ));
-                    }
-                }
+                acc.push_str(&block.render());
                 acc
             });
         let toolbar = Toolbar {}.render();
