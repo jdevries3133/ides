@@ -11,7 +11,9 @@ pub async fn ui(
     match Auth::from_headers(&db, &headers).await {
         AuthResult::Authenticated(auth) => {
             let position = get_current_position(&auth, &db).await?;
-            render(&auth, &db, &position).await
+            render(&auth, &db, &position)
+                .await
+                .map(|c| c.into_response())
         }
         AuthResult::NotAuthenticated => {
             Ok(htmx::redirect(HeaderMap::new(), &Route::Auth.as_string())
@@ -25,7 +27,7 @@ pub async fn render(
     auth: &Auth,
     db: impl PgExecutor<'_> + Copy,
     position: &CurrentPosition,
-) -> Result<Response> {
+) -> Result<String> {
     log_access(auth, db, position.current_block_sequence)
         .await
         .map_err(|e| {
@@ -46,8 +48,7 @@ pub async fn render(
             blocks: &blocks,
         },
     }
-    .render()
-    .into_response())
+    .render())
 }
 
 #[derive(Debug)]
@@ -103,7 +104,10 @@ pub async fn get_current_position(
 
 impl Component for SequencedBlock {
     fn render(&self) -> String {
-        match self.block.r#type {
+        let comment = Route::BookComment {
+            block_id: Some(self.id),
+        };
+        let content = match self.block.r#type {
             ides::content::BlockType::SectionTitle => {
                 format!(
                     r#"<h1 class="text-yellow-400">{}</h1>"#,
@@ -119,7 +123,20 @@ impl Component for SequencedBlock {
             ides::content::BlockType::Paragraph => {
                 format!("<p>{}</p>", clean(&self.block.content))
             }
-        }
+        };
+
+        format!(
+            r#"
+            <div
+                class="cursor-pointer"
+                hx-push-url="true"
+                hx-target="body" 
+                hx-get="{comment}"
+            >
+                {content}
+            </div>
+            "#
+        )
     }
 }
 

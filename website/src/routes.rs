@@ -31,6 +31,9 @@ pub enum Route {
     Auth,
     About,
     Book,
+    BookComment {
+        block_id: Option<i32>,
+    },
     BookNextPage,
     BookPrevPage,
     Favicon,
@@ -58,6 +61,10 @@ impl Route {
             Self::Auth => "/".into(),
             Self::About => "/about".into(),
             Self::Book => "/book".into(),
+            Self::BookComment { block_id } => match block_id {
+                Some(id) => format!("/block/{id}/comment"),
+                None => "/block/:block_id/comment".into(),
+            },
             Self::BookNextPage => "/book/next-page".into(),
             Self::BookPrevPage => "/book/prev-page".into(),
             Self::Favicon => "/favicon.ico".into(),
@@ -113,6 +120,14 @@ pub fn get_routes() -> Router<models::AppState> {
         .route(&Route::Auth.as_string(), get(auth::ui::get_handler))
         .route(&Route::Auth.as_string(), post(auth::ui::post_handler))
         .route(&Route::Book.as_string(), get(book::ui))
+        .route(
+            &Route::BookComment { block_id: None }.as_string(),
+            get(book::comment),
+        )
+        .route(
+            &Route::BookComment { block_id: None }.as_string(),
+            post(book::handle_comment),
+        )
         .route(&Route::BookNextPage.as_string(), get(book::next_page))
         .route(&Route::BookPrevPage.as_string(), get(book::prev_page))
         .route(&Route::Favicon.as_string(), get(r#static::get_favicon))

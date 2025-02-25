@@ -9,6 +9,7 @@ pub struct Block {
 }
 
 pub struct SequencedBlock {
+    pub id: i32,
     pub block: Block,
     pub sequence: i32,
 }
@@ -56,13 +57,14 @@ pub async fn list_blocks(
     book_revision_id: i32,
 ) -> Result<Vec<SequencedBlock>> {
     struct Qres {
+        id: i32,
         content: String,
         type_id: i32,
         sequence: i32,
     }
     let mut result = query_as!(
         Qres,
-        "select sequence, content, type_id
+        "select id, sequence, content, type_id
         from block
         where
             sequence > $1
@@ -85,6 +87,7 @@ pub async fn list_blocks(
     let mut x = result.drain(..);
     x.try_fold(Vec::new(), |mut acc, row| {
         acc.push(SequencedBlock {
+            id: row.id,
             sequence: row.sequence,
             block: Block {
                 r#type: row.type_id.try_into().map_err(|e: ErrStack| {

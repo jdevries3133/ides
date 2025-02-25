@@ -181,7 +181,9 @@ async fn change_page(
                 ErrStack::sqlx(e, "change_page; saving new position")
             })?;
 
-            render(auth, db, &new_position).await
+            render(auth, db, &new_position)
+                .await
+                .map(|c| c.into_response())
         }
     }
 }

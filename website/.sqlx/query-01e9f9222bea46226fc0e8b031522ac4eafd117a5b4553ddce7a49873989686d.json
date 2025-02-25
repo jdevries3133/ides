@@ -1,0 +1,22 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "select content from block where id = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "content",
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false
+    ]
+  },
+  "hash": "01e9f9222bea46226fc0e8b031522ac4eafd117a5b4553ddce7a49873989686d"
+}
