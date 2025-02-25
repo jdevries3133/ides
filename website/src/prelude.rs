@@ -8,7 +8,7 @@ pub use crate::{
 };
 pub use ammonia::clean;
 pub use axum::{
-    extract::{Form, Query, State},
+    extract::{Form, State},
     http::HeaderMap,
     response::{IntoResponse, Response},
 };

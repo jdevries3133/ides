@@ -91,20 +91,17 @@
 //! with notifications after content updates, letting them know which type
 //! of page-mapping was performed.
 
-use super::ui::{
-    get_current_position, render, CurrentPosition, ScreenAreaParams,
-};
+use super::ui::{get_current_position, render, CurrentPosition};
 use crate::{htmx, prelude::*};
 use ides::content::Direction;
 
 pub async fn next_page(
     State(AppState { db }): State<AppState>,
     headers: HeaderMap,
-    Query(params): Query<ScreenAreaParams>,
 ) -> Result<Response> {
     match Auth::from_headers(&db, &headers).await {
         AuthResult::Authenticated(auth) => {
-            change_page(&auth, &db, Direction::Forward, params).await
+            change_page(&auth, &db, Direction::Forward).await
         }
         AuthResult::NotAuthenticated => {
             Ok(htmx::redirect(HeaderMap::new(), &Route::Auth.as_string())
@@ -117,11 +114,10 @@ pub async fn next_page(
 pub async fn prev_page(
     State(AppState { db }): State<AppState>,
     headers: HeaderMap,
-    Query(params): Query<ScreenAreaParams>,
 ) -> Result<Response> {
     match Auth::from_headers(&db, &headers).await {
         AuthResult::Authenticated(auth) => {
-            change_page(&auth, &db, Direction::Back, params).await
+            change_page(&auth, &db, Direction::Back).await
         }
         AuthResult::NotAuthenticated => {
             Ok(htmx::redirect(HeaderMap::new(), &Route::Auth.as_string())
@@ -135,12 +131,11 @@ async fn change_page(
     auth: &Auth,
     db: impl PgExecutor<'_> + Copy,
     direction: Direction,
-    screen_area: ScreenAreaParams,
 ) -> Result<Response> {
     let position = get_current_position(auth, db).await?;
     let diff = match direction {
-        Direction::Back => -5,
-        Direction::Forward => 5,
+        Direction::Back => -3,
+        Direction::Forward => 3,
     };
     let new_seq = position.current_block_sequence + diff;
     let new_position = query_as!(
@@ -186,7 +181,7 @@ async fn change_page(
                 ErrStack::sqlx(e, "change_page; saving new position")
             })?;
 
-            render(auth, db, &new_position, &screen_area).await
+            render(auth, db, &new_position).await
         }
     }
 }

@@ -1,6 +1,7 @@
 # TODO
 
 - [ ] ability to leave comments (click on block => pop-up => leave a comment)
+- [ ] light mode colors
 
 # Done
 
