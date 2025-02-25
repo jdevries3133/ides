@@ -1,5 +1,7 @@
 use crate::prelude::*;
 
+pub const PAGE_SIZE: i32 = 3;
+
 #[derive(Debug, Eq, PartialEq)]
 pub struct Block {
     pub r#type: BlockType,
@@ -64,13 +66,14 @@ pub async fn list_blocks(
         from block
         where
             sequence > $1
-            and sequence < $2
+            and sequence <= $2
             and book_revision_id = $3
         order by sequence
-        limit 200",
-        current_sequence - 100,
-        current_sequence + 100,
-        book_revision_id
+        limit $4",
+        current_sequence,
+        current_sequence + 3,
+        book_revision_id,
+        PAGE_SIZE as i64
     )
     .fetch_all(db)
     .await

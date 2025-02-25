@@ -93,7 +93,7 @@
 
 use super::ui::{get_current_position, render, CurrentPosition};
 use crate::{htmx, prelude::*};
-use ides::content::Direction;
+use ides::content::{Direction, PAGE_SIZE};
 
 pub async fn next_page(
     State(AppState { db }): State<AppState>,
@@ -134,8 +134,8 @@ async fn change_page(
 ) -> Result<Response> {
     let position = get_current_position(auth, db).await?;
     let diff = match direction {
-        Direction::Back => -3,
-        Direction::Forward => 3,
+        Direction::Back => -PAGE_SIZE,
+        Direction::Forward => PAGE_SIZE,
     };
     let new_seq = position.current_block_sequence + diff;
     let new_position = query_as!(
@@ -146,7 +146,7 @@ async fn change_page(
             sequence current_block_sequence
         from block
         where
-            sequence >= $1
+            sequence = $1
             and book_revision_id = (
                 select revision_id
                 from current_revision
@@ -168,10 +168,10 @@ async fn change_page(
         Some(new_position) => {
             query!(
                 "insert into current_block (token_id, block_id)
-        values ($1, $2)
-        on conflict (token_id)
-        do update set
-            block_id = $2",
+                values ($1, $2)
+                on conflict (token_id)
+                do update set
+                block_id = $2",
                 auth.token_id,
                 new_position.current_block_id
             )

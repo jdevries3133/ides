@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "insert into current_block (token_id, block_id)\n                values ($1, $2)\n                on conflict (token_id)\n                do update set\n                block_id = $2",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "2d66be8fb97b03dd1c14af71f0b9864805b3ab67b4b64255c1d9d75d07f97f2d"
+}

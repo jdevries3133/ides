@@ -50,6 +50,7 @@ pub async fn render(
     .into_response())
 }
 
+#[derive(Debug)]
 pub struct CurrentPosition {
     pub book_revision_id: i32,
     pub current_block_sequence: i32,
