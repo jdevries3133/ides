@@ -134,7 +134,7 @@ impl Component for PageContainer<'_> {
         format!(
             r#"
             <div
-                class="p-2 sm:p-4 md:p-8 bg-teal-50 dark:bg-stone-900
+                class="p-2 sm:p-4 md:p-8 bg-stone-50 dark:bg-stone-900
                 dark:text-slate-200 min-h-[100vh]"
             >
                 {children}

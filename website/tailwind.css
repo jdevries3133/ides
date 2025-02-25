@@ -8,7 +8,7 @@ body {
 }
 
 .link {
-  @apply text-yellow-400 visited:text-yellow-600 underline;
+  @apply text-yellow-700 visited:text-yellow-900 dark:text-yellow-400 dark:visited:text-yellow-600 underline;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -139,7 +139,7 @@ impl Component for Reader<'_> {
             r#"
             <div
                 id="reader-container"
-                class="bg-teal-50 flex flex-col dark:bg-stone-900
+                class="bg-stone-50 flex flex-col dark:bg-stone-900
                 dark:text-slate-200 h-screen w-screen overflow-clip"
             >
                 <div class="w-screen flex-grow p-2 overflow-y-scroll">
@@ -148,12 +148,9 @@ impl Component for Reader<'_> {
                     </div>
                 </div>
                 <div>
-                    <div class="rounded-t flex bg-stone-700 px-2">
+                    <div class="rounded-t flex bg-stone-300 dark:bg-stone-700 px-2">
                         <p>reading as {reader_name}</p>
-                        <a
-                            class="link text-yellow-300 visited:text-yellow-400
-                            flex-grow text-right" href="{about}"
-                        >
+                        <a class="link flex-grow text-right" href="{about}">
                             about the site
                         </a>
                     </div>
@@ -178,12 +175,12 @@ impl Component for Toolbar {
             <button
                 hx-target="#reader-container"
                 hx-get="{prev}"
-                class="bg-stone-700 flex flex-grow p-1 justify-center items-center
-                border-stone-400 border-t-2"
+                class="bg-stone-300 dark:bg-stone-700 flex flex-grow p-1 justify-center items-center
+                border-stone-800 border-t-2"
             >{back}</button>
             <button
-                class="bg-stone-700 flex flex-grow p-1 justify-center items-center
-                border-stone-400 border-t-2"
+                class="bg-stone-300 dark:bg-stone-700 flex flex-grow p-1 justify-center items-center
+                border-stone-800 border-t-2"
                 hx-target="#reader-container"
                 hx-get="{next}"
             >{forward}</button>
