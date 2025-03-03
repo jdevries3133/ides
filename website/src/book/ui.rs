@@ -160,7 +160,7 @@ impl Component for Reader<'_> {
             <div
                 id="reader-container"
                 class="bg-stone-50 flex flex-col dark:bg-stone-900
-                dark:text-slate-200 h-screen w-screen overflow-clip"
+                dark:text-slate-200 h-dvh w-screen overflow-clip"
             >
                 <div class="w-screen flex-grow p-2 overflow-y-scroll">
                     <div class="prose sm:p-4 md:p-8 dark:text-slate-200">
