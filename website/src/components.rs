@@ -79,8 +79,8 @@ impl Component for Page<'_> {
                 <head>
                     <meta charset="UTF-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
-                    <meta name="theme-color" content="#BBF7D0"/>
-                    <meta name="description" content="ChatGPT-powered calorie counter" />
+                    <meta name="theme-color" content="#1C1917"/>
+                    <meta name="description" content="The Ides of August by Kate Tell" />
                     <title>{title}</title>
                     <style>
                         {tailwind}
