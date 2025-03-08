@@ -25,7 +25,7 @@ impl Component for TokenForm<'_> {
             <div class="flex items-center justify-center h-[80vh]">
                 <form class="flex flex-col" method="POST" action="{token_form_route}">
                     <label for="token">Token</label>
-                    <input id="token" name="token" type="text" value="{token}" />
+                    <input id="token" name="token" type="password" value="{token}" />
                     {validation_msg}
                     <button>save</button>
                 </form>
