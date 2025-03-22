@@ -1,5 +1,8 @@
 use crate::{bytes::Bytes, prelude::*};
-use aws_lc_rs::digest::{Context, SHA256};
+use aws_lc_rs::{
+    digest::{Context, SHA256},
+    rand::fill,
+};
 
 pub struct Auth {
     #[allow(unused)]
@@ -74,6 +77,14 @@ pub struct Token(String);
 impl Token {
     pub fn new(token: String) -> Self {
         Self(token)
+    }
+    pub fn create() -> Result<Self> {
+        let mut buffer = [0u8; 66];
+        fill(&mut buffer).map_err(|e| {
+            ErrStack::new(ErrT::Invariant)
+                .ctx(format!("aws says no random bytes for you: {e}"))
+        })?;
+        Ok(Self::new(buffer.to_base64()))
     }
     pub fn sha256_hex(&self) -> String {
         let mut ctx = Context::new(&SHA256);

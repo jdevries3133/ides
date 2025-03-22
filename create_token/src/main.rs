@@ -1,8 +1,6 @@
-use aws_lc_rs::rand::fill;
 use clap::Parser;
 use ides::{
     auth::{Role, Token},
-    bytes::Bytes,
     db,
     prelude::*,
 };
@@ -25,12 +23,7 @@ async fn main() -> std::result::Result<(), ()> {
         let args = Args::parse();
         let db = db::create_pg_pool().await?;
 
-        let mut buffer = [0u8; 66];
-        fill(&mut buffer).map_err(|e| {
-            ErrStack::new(ErrT::Invariant)
-                .ctx(format!("aws says no random bytes for you: {e}"))
-        })?;
-        let token = Token::new(buffer.to_base64());
+        let token = Token::create()?;
         let digest = token.sha256_hex();
 
         let role: Role =

@@ -676,7 +676,6 @@ checksum = "19d374276b40fb8bbdee95aef7c7fa6b5316ec764510eb64b8dd0e2ed0d7e7f5"
 name = "create-token"
 version = "0.1.0"
 dependencies = [
- "aws-lc-rs",
  "clap",
  "ides",
  "sqlx",
