@@ -1,5 +1,6 @@
 use crate::{components::Saved, prelude::*};
 use axum::{http::HeaderValue, response::Redirect};
+use chrono::{Days, Utc};
 use ides::auth::{Auth, AuthResult, Token};
 
 #[derive(Default)]
@@ -45,11 +46,17 @@ pub async fn post_handler(
     Form(Payload { token }): Form<Payload>,
 ) -> Result<impl IntoResponse> {
     let mut headers = HeaderMap::new();
-    let val =
-        HeaderValue::from_str(&format!("token={token}")).map_err(|e| {
-            ErrStack::new(ErrT::AuthNonUtf8Cookie)
-                .ctx(format!("submitted auth cookie is not utf-8: {e}"))
-        })?;
+    let expiry_date = Utc::now()
+        .checked_add_days(Days::new(365))
+        .expect("heat death of the universe has not happened yet")
+        .format("%a, %d %b %Y %H:%M:%S %Z");
+    let val = HeaderValue::from_str(&format!(
+        "token={token}; Path=/; HttpOnly; Expires={expiry_date}"
+    ))
+    .map_err(|e| {
+        ErrStack::new(ErrT::AuthNonUtf8Cookie)
+            .ctx(format!("submitted auth cookie is not utf-8: {e}"))
+    })?;
     headers.insert("Set-Cookie", val);
 
     let token = Token::new(token);
