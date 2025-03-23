@@ -36,6 +36,10 @@ htmx.on("htmx:beforeSwap", (e) => {
     e.detail.shouldSwap = true;
     e.detail.isError = false;
   }
+  if (e.detail.xhr.status === 501) {
+    e.detail.shouldSwap = true;
+    e.detail.isError = false;
+  }
 });
 
 htmx.config.defaultSwapStyle = "outerHTML";

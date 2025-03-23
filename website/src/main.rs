@@ -1,4 +1,4 @@
-//! A GPT-powered calorie counter.
+#![feature(let_chains)]
 
 use dotenvy::dotenv;
 use ides::prelude::*;

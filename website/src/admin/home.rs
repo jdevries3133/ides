@@ -22,11 +22,13 @@ impl Component for Home {
     fn render(&self) -> String {
         let import = Route::AdminImportBook;
         let change_rev = Route::AdminChangeRevision;
+        let token = Route::AdminToken;
         format!(
             r#"
             <div class="flex flex-col">
                 <a class="link" href="{import}">Import Book</a>
                 <a class="link" href="{change_rev}">Change Current Revision</a>
+                <a class="link" href="{token}">Manage Reader Tokens</a>
             </div>
             "#
         )

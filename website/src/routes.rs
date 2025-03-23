@@ -3,7 +3,7 @@
 use super::{about, admin, auth, book, middleware, models, r#static};
 use axum::{
     middleware::from_fn,
-    routing::{get, post, Router},
+    routing::{delete, get, post, Router},
 };
 
 /// This enum contains all of the route strings in the application. This
@@ -28,6 +28,10 @@ pub enum Route {
     AdminHome,
     AdminImportBook,
     AdminChangeRevision,
+    AdminToken,
+    AdminRevokeToken {
+        token_id: Option<i32>,
+    },
     Auth,
     About,
     Book,
@@ -58,6 +62,11 @@ impl Route {
             Self::AdminHome => "/admin".into(),
             Self::AdminImportBook => "/admin/import-book".into(),
             Self::AdminChangeRevision => "/admin/change-revision".into(),
+            Self::AdminToken => "/admin/manage-tokens".into(),
+            Self::AdminRevokeToken { token_id } => match token_id {
+                Some(id) => format!("/admin/manage-tokens/{id}"),
+                None => "/admin/manage-tokens/:token_id".into(),
+            },
             Self::Auth => "/".into(),
             Self::About => "/about".into(),
             Self::Book => "/book".into(),
@@ -116,6 +125,15 @@ pub fn get_routes() -> Router<models::AppState> {
         .route(
             &Route::AdminChangeRevision.as_string(),
             post(admin::handle_revision_change),
+        )
+        .route(&Route::AdminToken.as_string(), get(admin::manage_tokens))
+        .route(
+            &Route::AdminToken.as_string(),
+            post(admin::handle_create_token),
+        )
+        .route(
+            &Route::AdminRevokeToken { token_id: None }.as_string(),
+            delete(admin::handle_revoke_token),
         )
         .route(&Route::Auth.as_string(), get(auth::ui::get_handler))
         .route(&Route::Auth.as_string(), post(auth::ui::post_handler))

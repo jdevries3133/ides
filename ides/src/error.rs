@@ -12,6 +12,7 @@ pub enum ErrT {
     DbConnectionFailure,
     DbMigrationFailure,
     DbReturnedErronoeousRole,
+    TokenInUse,
     Invariant,
     SqlxError,
     ValidationError,
