@@ -36,14 +36,14 @@ async fn revision_change_ui(
     .fetch_optional(db)
     .await
     .map_err(|e| {
-        ErrStack::sqlx(e, "change_revision: fetch current revision")
+        ErrStack::sqlx(&e, "change_revision: fetch current revision")
     })?;
     let revisions =
         query_as!(Revision, "select id, created_at from book_revision")
             .fetch_all(db)
             .await
             .map_err(|e| {
-                ErrStack::sqlx(e, "change_revision: fetch all revisions")
+                ErrStack::sqlx(&e, "change_revision: fetch all revisions")
             })?;
     Ok(RevisionChangeUI {
         current_revision,
@@ -154,7 +154,7 @@ pub async fn handle_revision_change(
             .execute(&db)
             .await
             .map_err(|e| {
-                ErrStack::sqlx(e, "handle_revision_change: save new rev")
+                ErrStack::sqlx(&e, "handle_revision_change: save new rev")
             })?;
 
             let ui = revision_change_ui(&db).await?;

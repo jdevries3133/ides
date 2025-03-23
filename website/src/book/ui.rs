@@ -77,7 +77,7 @@ pub async fn get_current_position(
     )
     .fetch_optional(db)
     .await
-    .map_err(|e| ErrStack::sqlx(e, "get_current_position"))?;
+    .map_err(|e| ErrStack::sqlx(&e, "get_current_position"))?;
 
     match result {
         Some(r) => Ok(r),
@@ -97,7 +97,7 @@ pub async fn get_current_position(
                 )
             order by sequence
             limit 1"
-        ).fetch_one(db).await.map_err(|e| ErrStack::sqlx(e, "get_current_position :: current revision does not exist in the first place"))
+        ).fetch_one(db).await.map_err(|e| ErrStack::sqlx(&e, "get_current_position :: current revision does not exist in the first place"))
         }
     }
 }

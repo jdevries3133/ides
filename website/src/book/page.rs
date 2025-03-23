@@ -158,7 +158,7 @@ async fn change_page(
     )
     .fetch_optional(db)
     .await
-    .map_err(|e| ErrStack::sqlx(e, "change_page"))?;
+    .map_err(|e| ErrStack::sqlx(&e, "change_page"))?;
 
     match new_position {
         None => {
@@ -178,7 +178,7 @@ async fn change_page(
             .execute(db)
             .await
             .map_err(|e| {
-                ErrStack::sqlx(e, "change_page; saving new position")
+                ErrStack::sqlx(&e, "change_page; saving new position")
             })?;
 
             render(auth, db, &new_position)

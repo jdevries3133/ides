@@ -18,7 +18,7 @@ pub async fn comment(
             )
             .fetch_one(&db)
             .await
-            .map_err(|e| ErrStack::sqlx(e, "render comment form"))?;
+            .map_err(|e| ErrStack::sqlx(&e, "render comment form"))?;
             Ok(Page {
                 title: "Comment",
                 children: &PageContainer {
@@ -98,7 +98,7 @@ pub async fn handle_comment(
             .execute(&db)
             .await
             .map_err(|e| {
-                ErrStack::sqlx(e, "inserting a comment into the DB")
+                ErrStack::sqlx(&e, "inserting a comment into the DB")
             })?;
             let mut headers = HeaderMap::new();
             headers.insert(
