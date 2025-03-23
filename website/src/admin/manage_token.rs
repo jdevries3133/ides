@@ -53,6 +53,9 @@ impl Component for OverviewPage<'_> {
             </form>
             <h2 class="text-xl">Existing Tokens</h2>
             <div class="grid gap-2 grid-cols-3 max-w-prose">
+                <p class="bold">Id</p>
+                <p class="bold">Name</p>
+                <p class="bold"></p>
                 {rendered_tokens}
             </div>
             "#
