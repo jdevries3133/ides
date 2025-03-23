@@ -245,11 +245,16 @@ async fn db_delete_token(db: impl PgExecutor<'_>, token_id: i32) -> Result<()> {
         .await
         .map_err(|e| {
             let stack = ErrStack::sqlx(&e, "db_delete_token");
-            if let Some(db_err) = e.as_database_error()
-                && let Some(constraint) = db_err.constraint()
-                && constraint == "access_log_token_id_fkey"
-            {
-                stack.wrap(ErrT::TokenInUse)
+            if let Some(db_err) = e.as_database_error() {
+                if let Some(constraint) = db_err.constraint() {
+                    if constraint == "access_log_token_id_fkey" {
+                        stack.wrap(ErrT::TokenInUse)
+                    } else {
+                        stack
+                    }
+                } else {
+                    stack
+                }
             } else {
                 stack
             }

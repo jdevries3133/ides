@@ -1,5 +1,3 @@
-#![feature(let_chains)]
-
 use dotenvy::dotenv;
 use ides::prelude::*;
 use std::net::SocketAddr;
