@@ -49,8 +49,6 @@ pub enum Direction {
     Forward,
 }
 
-/// Return 200 blocks adjacent to current_block_id (100 before & 100 after)
-/// in sequence order.
 pub async fn list_blocks(
     db: impl PgExecutor<'_> + Copy,
     current_sequence: i32,
