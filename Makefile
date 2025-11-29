@@ -128,12 +128,12 @@ proxy-prod-db:
 	kubectl -n $(PROJECT_NAME) port-forward service/db-postgresql 5433:5432
 
 backup-prod:
-	mkdir -p ~/Desktop/$(PROJECT_NAME)_backups
+	mkdir -p ~/Desktop/db_backups
 	kubectl exec \
 		-n $(PROJECT_NAME) \
 		pod/db-postgresql-0 \
 		-- /bin/sh -c "pg_dump postgresql://$(PROJECT_NAME):\$$POSTGRES_PASSWORD@127.0.0.1:5432/$(PROJECT_NAME)" \
-		> ~/Desktop/$(PROJECT_NAME)_backups/backup-$(shell date '+%m-%d-%Y__%H:%M:%S').sql
+		> ~/Desktop/db_backups/$(PROJECT_NAME)_backup-$(shell date '+%m-%d-%Y__%H:%M:%S').sql
 
 build-container: setup
 	cd website && pnpm run build
