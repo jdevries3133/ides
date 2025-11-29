@@ -71,7 +71,7 @@ pub async fn list_blocks(
         order by sequence
         limit $4",
         current_sequence,
-        current_sequence + 3,
+        current_sequence + PAGE_SIZE,
         book_revision_id,
         PAGE_SIZE as i64
     )

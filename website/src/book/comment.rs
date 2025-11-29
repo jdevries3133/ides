@@ -1,5 +1,5 @@
-use crate::{htmx, prelude::*};
-use axum::http::HeaderValue;
+use crate::{book::ui::ScreenAreaParams, htmx, prelude::*};
+use axum::{extract::Query, http::HeaderValue};
 
 pub async fn comment(
     State(AppState { db }): State<AppState>,
@@ -84,6 +84,7 @@ pub struct Payload {
 pub async fn handle_comment(
     State(AppState { db }): State<AppState>,
     headers: HeaderMap,
+    Query(screen_area): Query<ScreenAreaParams>,
     Path(block_id): Path<i32>,
     Form(payload): Form<Payload>,
 ) -> Result<Response> {
@@ -113,6 +114,7 @@ pub async fn handle_comment(
                         &auth,
                         &db,
                         &super::ui::get_current_position(&auth, &db).await?,
+                        &screen_area,
                     )
                     .await?,
                     Saved {
