@@ -177,27 +177,3 @@ impl Component for Saved<'_> {
         )
     }
 }
-
-pub struct AboutPage;
-impl Component for AboutPage {
-    fn render(&self) -> String {
-        r#"
-        <div class="prose dark:text-slate-200">
-            <h1 class="dark:text-slate-200">About Your App</h1>
-            <p>
-                Tell the world about your app!
-            </p>
-        </div>
-        "#
-        .into()
-    }
-}
-
-pub struct Span {
-    pub content: String,
-}
-impl Component for Span {
-    fn render(&self) -> String {
-        format!("<span>{}</span>", clean(&self.content))
-    }
-}
